@@ -37,3 +37,19 @@ export function hexesInRadius(n) {
 export function hexToWorld(q, r, size) {
   return [size * Math.sqrt(3) * (q + r / 2), size * 1.5 * r];
 }
+
+// Điểm (x, z) trong thế giới → ô lục giác (q, r) chứa nó, làm tròn theo hệ cube.
+export function worldToHex(x, z, size) {
+  const qf = ((Math.sqrt(3) / 3) * x - z / 3) / size;
+  const rf = ((2 / 3) * z) / size;
+  const sf = -qf - rf;
+  let q = Math.round(qf);
+  let r = Math.round(rf);
+  const s = Math.round(sf);
+  const dq = Math.abs(q - qf);
+  const dr = Math.abs(r - rf);
+  const ds = Math.abs(s - sf);
+  if (dq > dr && dq > ds) q = -r - s;
+  else if (dr > ds) r = -q - s;
+  return [q + 0, r + 0];
+}

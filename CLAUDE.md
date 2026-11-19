@@ -25,7 +25,10 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
 - `src/render/` — chỉ đọc state để vẽ, không sửa luật.
 - `src/config.js` — mọi con số cân bằng và tham số hiển thị. Không rải số "ma thuật" trong logic.
 - `src/sim/hex.js` toán lục giác (axial, đỉnh nhọn, hướng d ↔ góc 60°·d). `src/sim/terrain.js` sinh bản đồ bậc + dốc, có luật đi lại (`canStep`).
-- `src/render/placeholder.js` là khối đền tạm, thay khi có mô hình đền thật.
+- `src/sim/clock.js` đồng hồ ngày đêm trong state. `src/sim/flora.js` vị trí cây/bụi/đá + cây cổ thụ (landmark).
+- `src/render/fakelight.js`: mọi vật liệu Lambert mới phải gắn `applyFakeLight(obj)` để nhận ánh đèn lồng ban đêm; chỉ mặt đất dùng `{ aura: true }`.
+- `src/render/props/temple.js` đền + cổng theo `condition` (0 hoang tàn → 1 đã sửa). `src/ui/devpanel.js` là bảng thử tạm, không phải UI game.
+- Tham số URL xem nhanh: `?t=0.92` (giờ), `?temple=1`, `?pause=1`, `?dist=24` (cận cảnh), `?panel=0`, `?debug=1`.
 
 ## Hiệu năng (bắt buộc — mục tiêu: điện thoại tầm trung chạy mượt, không nóng máy)
 
@@ -55,6 +58,8 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
 - **Không gợi tôn giáo có thật nào**: không thập giá, chữ vạn, tượng Phật, mái vòm xanh kiểu nhà thờ Hy Lạp, chữ Phạn/Hán trên biển, tràng hạt, áo cà sa... Kiến trúc đền là kiểu hư cấu.
 - Từ ngữ trung tính: "đền", "người giữ đền", "người hành lễ", "nghi lễ", "lễ hội", "khách viếng", "pháp lực", "yêu ma". Tránh "chùa", "nhà thờ", "sư", "cha xứ", "Phật", "Chúa".
 - Thế giới hư cấu: tên làng, địa danh, sinh vật tự đặt.
+- Cổng, cột: tránh cột đỏ + xà ngang không mái (dễ giống cổng torii). Không tháp nhiều tầng, không hoa sen làm hoạ tiết, không đèn đá kiểu tōrō.
+- Ma: dễ thương (thân tròn, mắt to, má hồng), không máu me; không khí đêm mới là phần đáng sợ.
 - "Quyên góp" chỉ là tiền trong game, không bao giờ gắn với tiền thật.
 - Nhân vật chính là **người trông coi, quản lý** — không phải người hành lễ.
 

@@ -13,6 +13,35 @@ export const CONFIG = {
     maxCliff: 2,          // chênh bậc tối đa giữa hai ô đất kề nhau
     dirtChance: 0.08,     // tỉ lệ ô đất trống
   },
+  flora: {
+    clearRadius: 2,       // không rải cây trong bán kính này quanh đền (sân + vòng quanh)
+    heroTree: [-1, -1],   // ô của cây cổ thụ cạnh đền (phía sau-trái khi nhìn từ camera mặc định)
+    heroTreeHeight: 2.6,  // chiều cao cây cổ thụ (đơn vị thế giới)
+    heroTreeRotation: 0.6,
+    spotRadius: 0.42,     // khoảng lệch khỏi tâm ô khi một ô có nhiều cây
+    forestScale: 0.35,    // tần số nhiễu gom cây thành cụm rừng
+    forestAbove: 0.58,    // nhiễu trên ngưỡng này là rừng (2 cây/ô)
+    denseAbove: 0.72,     // rừng rậm (3 cây/ô)
+    lonelyTreeChance: 0.12, // ô cỏ ngoài rừng có 1 cây lẻ
+    dirtTreeChance: 0.05,
+    bushChance: 0.12,     // ô trống có bụi
+    rockChance: 0.06,     // ô trống có đá nhỏ
+    variants: { tree: 4, bush: 2, rock: 3 }, // số dáng mỗi loại (render phải có đủ)
+  },
+  time: {
+    dayLengthSec: 480,    // một ngày trong game = 8 phút thật (tốc độ 1x)
+    startT: 0.3,          // giờ bắt đầu (0.3 ≈ 7h12 sáng)
+    dawn: 0.25,           // từ đây là ban ngày
+    dusk: 0.77,           // từ đây là ban đêm
+  },
+  temple: {
+    rotation: Math.PI / 6, // mặt tiền đền hướng theo hướng lục giác 1 (gần hướng camera mặc định)
+    gateHex: [0, 2],       // ô đặt cổng, cùng hướng mặt tiền
+  },
+  aura: {
+    minRadius: 2.2,       // bán kính vùng pháp lực khi đền hoang tàn (tạm, sau tính từ pháp lực)
+    maxRadius: 6.5,       // khi đền đã sửa
+  },
   camera: {
     fov: 30,              // FOV hẹp cho cảm giác gần isometric như ảnh tham khảo
     distance: 60,         // khoảng cách ban đầu tới tâm

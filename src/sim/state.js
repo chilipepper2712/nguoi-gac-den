@@ -3,6 +3,8 @@
 
 import { seedToRngState } from './rng.js';
 import { generateTerrain } from './terrain.js';
+import { generateFlora } from './flora.js';
+import { createClock } from './clock.js';
 
 export const SAVE_VERSION = 1;
 
@@ -12,8 +14,11 @@ export function createState({ seed = 1 } = {}) {
     seed,
     rngState: seedToRngState(seed),
     map: null,
+    clock: createClock(),
+    temple: { condition: 0 }, // 0 = hoang tàn, 1 = đã sửa
   };
   state.map = generateTerrain(state);
+  generateFlora(state);
   return state;
 }
 

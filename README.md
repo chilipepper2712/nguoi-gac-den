@@ -2,7 +2,7 @@
 
 Demo game quản lý + nhập vai: một nhân viên văn phòng thất bại thừa kế ngôi đền hoang của ông cậu, về quê dọn dẹp, sửa sang, và dần dần giữ cả vùng an toàn khỏi yêu ma.
 
-Trạng thái: **khung dự án** — có địa hình lục giác nhiều bậc, chưa có gameplay. Thiết kế và các câu hỏi còn mở: [`docs/design.md`](docs/design.md).
+Trạng thái: **thử phong cách** — địa hình lục giác nhiều bậc, cây, đền hoang/đã sửa, ngày đêm, ma; chưa có gameplay. Thiết kế và các câu hỏi còn mở: [`docs/design.md`](docs/design.md).
 
 ## Chạy
 
@@ -11,7 +11,7 @@ npm run serve        # hoặc: python3 -m http.server 8080
 # mở http://localhost:8080
 ```
 
-Không cần build. Tham số URL: `?seed=123` (bản đồ khác), `?debug=1` (hiện fps, draw calls, số tam giác).
+Không cần build. Tham số URL: `?seed=123` (bản đồ khác), `?t=0.92` (giờ trong ngày, 0 = nửa đêm), `?temple=1` (đền đã sửa), `?pause=1`, `?dist=24` (cận cảnh), `?panel=0` (ẩn bảng thử), `?debug=1` (fps, draw calls, số tam giác).
 
 ## Phát triển
 
@@ -37,3 +37,4 @@ docs/design.md      thiết kế, quyết định, câu hỏi mở
 ## Credit
 
 - [three.js](https://threejs.org) r187 — MIT, xem `vendor/three/LICENSE`.
+- `assets/props/hero_tree.glb`: sinh bằng AI (Higgsfield, Hunyuan3D) theo yêu cầu của tác giả game, đã chuyển về low-poly màu phẳng bằng `tools/flatten_glb.mjs`.

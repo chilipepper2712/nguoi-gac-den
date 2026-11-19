@@ -25,7 +25,10 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - Ban đêm nhân vật làm việc của người trông coi; sự kiện đặc biệt có hướng dẫn riêng của sự kiện.
 - Người hành lễ là NPC được mời/thuê; người chơi lo chuẩn bị. NPC cấp cao chỉ mời được khi đạt ngưỡng.
 - Thua / tổn thất thật: đền phá sản, bị ma ám, người bị bắt mất thật.
-- Tone: pha trộn hài, ấm áp, rùng rợn tuỳ tình huống và nhiệm vụ.
+- Tone: **ấm áp, hài** là nền; ban đêm không khí đáng sợ (tối, lạnh, sương) nhưng **ma dễ thương**.
+- Asset: hybrid. Code dựng công trình nhiều trạng thái, địa hình, cây thường (vài dáng đơn giản rải theo cụm). AI (Higgsfield) cho đồ hữu cơ nổi bật.
+  Cây cổ thụ cạnh đền: dáng cây đa, **bỏ rễ thả từ tán** (Hunyuan LowPoly, `assets/props/hero_tree.glb`).
+  Bộ Kenney CC0 người dùng chọn: Hexagon Kit, Nature Kit, Survival Kit (chưa tải được: kenney.nl chặn tải tự động, người dùng tự tải).
 - Nhân vật chính là nam. Chuỗi UI tiếng Việt. Lưu game trên trình duyệt.
 
 ## Đề xuất, chờ người dùng xác nhận
@@ -43,6 +46,14 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - Phạm vi demo ~20–30 phút, kết thúc ở lễ hội đầu tiên.
 - Ý tưởng cốt truyện: người ở công ty cũ (ví dụ ông sếp) về sau bị ma ám, phải tìm đến chính ngôi đền.
 
+## Bản thử phong cách (đã có)
+
+- Đền phương Đông hư cấu dựng bằng code, hai trạng thái hoang tàn / đã sửa (mái võng thủng rêu, cột gãy, gạch vụn ↔ mái ngói cong, đèn lồng). Cổng gỗ tối có mái nhỏ (tránh cột đỏ + xà ngang dễ giống torii).
+- Ngày đêm theo đồng hồ trong state (`src/sim/clock.js`), 1 ngày = 8 phút ở 1x.
+- Ánh sáng giả cho điện thoại (`src/render/fakelight.js`): quầng đèn lồng + vòng pháp lực trên mặt đất, không dùng PointLight.
+- Ma dễ thương phát sáng ban đêm, lượn ngay ngoài mép vùng pháp lực: đền hoang → vùng nhỏ, ma kéo sát đền; đền sửa → vùng nở, ma bị đẩy lùi. (Bán kính tạm suy từ trạng thái đền; sau tính từ pháp lực.)
+- Bậc đá trên ô dốc. Bảng thử ở đáy màn hình: kéo giờ, chạy/dừng, tốc độ, đổi trạng thái đền.
+
 ## Thử nghiệm asset AI (cây đa, 2026-11-19)
 
 Cùng một ảnh nguồn (gpt_image_2_6, 0.25 credit), so trên địa hình thật:
@@ -59,9 +70,7 @@ Kết luận: SAM + chuyển đổi là mặc định cho đồ hữu cơ; Hunyu
 
 1. Cái nào trong "phá sản / ma ám / bị bắt" là kết thúc game, cái nào là tổn thất cứu lại được?
 2. "Pháp lực hay uy tín" là một chỉ số hay hai?
-3. Tone nền mặc định là gì (để quyết bảng màu đêm, thiết kế ma, nhạc)?
-4. Nguồn asset: đã thống nhất hybrid; còn chờ tên/link bộ asset free người dùng lấy để kiểm license và bảng màu.
-5. Phạm vi demo: cái gì bắt buộc phải có?
+3. Phạm vi demo: cái gì bắt buộc phải có?
 
 ## Rủi ro thiết kế đã nêu
 

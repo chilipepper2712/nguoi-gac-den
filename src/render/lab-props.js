@@ -6,21 +6,10 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { buildBanyan } from './props/banyan.js';
 import { levelY } from './terrain.js';
-import { key } from '../sim/hex.js';
+import { key, worldToHex } from '../sim/hex.js';
 import { CONFIG } from '../config.js';
 
 const TARGET_HEIGHT = 2.6;
-
-// Toạ độ thế giới (x, z) → ô lục giác (q, r), làm tròn theo hệ cube.
-function worldToHex(x, z, size) {
-  const qf = ((Math.sqrt(3) / 3) * x - z / 3) / size;
-  const rf = ((2 / 3) * z) / size;
-  const sf = -qf - rf;
-  let q = Math.round(qf); let r = Math.round(rf); const s = Math.round(sf);
-  const dq = Math.abs(q - qf); const dr = Math.abs(r - rf); const ds = Math.abs(s - sf);
-  if (dq > dr && dq > ds) q = -r - s; else if (dr > ds) r = -q - s;
-  return [q, r];
-}
 
 // Chuẩn hoá: cao TARGET_HEIGHT, đáy chạm y=0, tâm ở gốc; đổi vật liệu sang Lambert cho đồng nhất.
 function normalize(root, { flat }) {
