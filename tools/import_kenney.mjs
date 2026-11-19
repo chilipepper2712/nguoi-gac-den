@@ -5,7 +5,7 @@
 //   node tools/import_kenney.mjs --kit survival --src "<thư mục GLB>" --out assets/kenney/survival tree-log barrel ...
 //
 // nature   : vật liệu có tên + màu phẳng → ánh xạ theo tên (NATURE).
-// survival / hexagon : texture atlas 'colormap' 512×512, hàng A (y 256–383) và hàng B (y 384–511), mỗi hàng 16 ô rộng 32px
+// survival / modular / hexagon : texture atlas 'colormap' 512×512, hàng A (y 256–383) và hàng B (y 384–511), mỗi hàng 16 ô rộng 32px
 //            → xác định ô của từng mặt rồi ánh xạ theo ATLAS.
 // Bảng màu đích lấy theo bảng màu game (src/render/flora.js, props/temple.js). Đổi bảng màu thì sửa ở đây và nhập lại.
 
@@ -38,11 +38,20 @@ const NATURE = {
   _defaultMat: 0xf4efe4,
 };
 
-// [hàng A, hàng B] × 16 cột
-const ATLAS = [
-  [0x8fbb64, 0x6f9e5a, 0xc46a55, 0xb5654a, 0xd98f5c, 0xe3a46f, 0x7f8fa8, 0x6f7e98, 0x7f8fa8, 0x6f7e98, 0xb9c6d4, 0xa8b6c6, 0xa596bf, 0x8f80ab, 0x333333, 0x333333],
-  [0x5d5650, 0x4f4945, 0xa39c92, 0x8f887e, 0xb5aea4, 0xc2bbb0, 0xefe6d2, 0xe6dcc8, 0xc9a582, 0xb08a6e, 0x9b7f74, 0x8c7268, 0xd9c4a0, 0xcdb38c, 0xefe6d2, 0xe6dcc8],
-];
+// Mỗi bộ một bảng ô màu atlas: [hàng A, hàng B] × 16 cột → màu game
+const ATLAS = {
+  survival: [
+    [0x8fbb64, 0x6f9e5a, 0xc46a55, 0xb5654a, 0xd98f5c, 0xe3a46f, 0x7f8fa8, 0x6f7e98, 0x7f8fa8, 0x6f7e98, 0xb9c6d4, 0xa8b6c6, 0xa596bf, 0x8f80ab, 0x333333, 0x333333],
+    [0x5d5650, 0x4f4945, 0xa39c92, 0x8f887e, 0xb5aea4, 0xc2bbb0, 0xefe6d2, 0xe6dcc8, 0xc9a582, 0xb08a6e, 0x9b7f74, 0x8c7268, 0xd9c4a0, 0xcdb38c, 0xefe6d2, 0xe6dcc8],
+  ],
+  // Modular Buildings: tường vôi, mái ngói đất nung, kính → song gỗ tối, viền → gỗ
+  modular: [
+    [0xd9a35f, 0xcf9550, 0xd9a35f, 0xcf9550, 0xd98f5c, 0xc97f4f, 0xb5654a, 0xa35a42, 0x5a4038, 0x4f3a33, 0x6b4f45, 0x5a4038, 0xa596bf, 0x8f80ab, 0x333333, 0x333333],
+    // B0/B1: mái (sample-house dùng B1 cho mái) · B8/B9: tường · B14/B15: viền, chân tường
+    [0xb5654a, 0xb5654a, 0xb5654a, 0xa35a42, 0xc2bbb0, 0xb5aea4, 0xf4efe4, 0xefe6d2, 0xefe6d2, 0xe8dcc2, 0x8a4a37, 0x7d5a4f, 0xb5654a, 0xa35a42, 0xe6dcc8, 0xcfc3aa],
+  ],
+};
+ATLAS.hexagon = ATLAS.survival; // chưa kiểm bảng ô của Hexagon Kit — kiểm trước khi dùng
 
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args.splice(i, 2)[1] : null; };
@@ -97,7 +106,7 @@ for (const name of names) {
           const y = Math.min(img.height - 1, Math.max(0, Math.floor((v - Math.floor(v)) * img.height)));
           const col16 = Math.floor(x / (img.width / 16));
           const row = y >= img.height * 0.75 ? 1 : 0;
-          col = hexLin(ATLAS[row][col16]);
+          col = hexLin(ATLAS[kit][row][col16]);
         } else {
           col = matColor();
         }

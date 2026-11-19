@@ -5,18 +5,20 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { buildBanyan } from './props/banyan.js';
+import { buildHouseGeometry } from './props/house.js';
+import { withFakeLight } from './fakelight.js';
 import { levelY } from './terrain.js';
-import { key, worldToHex } from '../sim/hex.js';
+import { key, worldToHex, hexToWorld } from '../sim/hex.js';
 import { CONFIG } from '../config.js';
 
 const TARGET_HEIGHT = 2.6;
 
 // Chuẩn hoá: cao TARGET_HEIGHT, đáy chạm y=0, tâm ở gốc; đổi vật liệu sang Lambert cho đồng nhất.
-function normalize(root, { flat }) {
+function normalize(root, { flat, fit }) {
   root.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(root);
   const size = box.getSize(new THREE.Vector3());
-  const s = TARGET_HEIGHT / size.y;
+  const s = fit ? fit / Math.max(size.x, size.z) : TARGET_HEIGHT / size.y;
   const center = box.getCenter(new THREE.Vector3());
   const wrap = new THREE.Group();
   root.position.sub(new THREE.Vector3(center.x, box.min.y, center.z));
@@ -51,14 +53,27 @@ function label(text) {
 export async function setupPropsLab(view, state, params) {
   const items = [];
 
-  const code = buildBanyan({ height: TARGET_HEIGHT });
-  items.push({ object: code, name: 'code', tris: code.geometry.attributes.position.count / 3 });
+  // ?code=houses: các nhà dựng bằng code (dáng-mức); mặc định: cây đa code
+  if (params.get('code') === 'houses') {
+    const mat = withFakeLight(new THREE.MeshLambertMaterial({ vertexColors: true }));
+    for (const [variant, level] of [[0, 0], [1, 1], [2, 2]]) {
+      const geo = buildHouseGeometry({ variant, level });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.scale.setScalar(Number(params.get('houseScale')) || 1.3);
+      items.push({ object: mesh, name: `code dáng ${variant} mức ${level}`, tris: geo.attributes.position.count / 3 });
+    }
+  } else {
+    const code = buildBanyan({ height: TARGET_HEIGHT });
+    items.push({ object: code, name: 'code', tris: code.geometry.attributes.position.count / 3 });
+  }
 
   const files = (params.get('glb') || '').split(',').filter(Boolean);
   const loader = new GLTFLoader();
   for (const f of files) {
     const gltf = await loader.loadAsync(`assets/_lab/${f}`);
-    const { object, tris } = normalize(gltf.scene, { flat: params.get('flat') === '1' });
+    const { object, tris } = normalize(gltf.scene, { flat: params.get('flat') === '1', fit: Number(params.get('fit')) || 0 });
     items.push({ object, name: f, tris });
   }
 
@@ -67,8 +82,11 @@ export async function setupPropsLab(view, state, params) {
   const gap = Number(params.get('gap')) || 3.4;
   const slots = items.map((_, i) => {
     const off = (i - (items.length - 1) / 2) * gap;
-    const x = off / Math.SQRT2;
-    const z = -off / Math.SQRT2;
+    // ?center=q,r dời hàng so sánh sang ô khác (tránh đè lên đền)
+    const [cq, cr] = (params.get('center') || '0,0').split(',').map(Number);
+    const [ox, oz] = hexToWorld(cq, cr, S);
+    const x = ox + off / Math.SQRT2;
+    const z = oz - off / Math.SQRT2;
     const [q, r] = worldToHex(x, z, S);
     const tile = state.map.tiles[key(q, r)];
     return new THREE.Vector3(x, tile ? levelY(tile.h) : 0, z);

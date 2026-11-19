@@ -20,7 +20,7 @@ const COL = {
 const pickC = (pair, cond) => new THREE.Color(pair[1]).lerp(new THREE.Color(pair[0]), cond).getHex();
 
 // Mái hông có đầu đao cong. Trả về geometry (đã tô màu), bỏ qua một số ô nếu `holes` > 0.
-export function curvedRoof({ w, d, h, ridge, lift, sag = 0, ridgeSag = 0, color, edgeColor, holes = 0, rnd = Math.random, moss = 0, mossColor = COL.moss }) {
+export function curvedRoof({ w, d, h, ridge, lift, sag = 0, ridgeSag = 0, color, edgeColor, holes = 0, rnd = Math.random, moss = 0, mossColor = COL.moss, underside = false, undersideShade = 0.7 }) {
   const N = 6;
   const M = 3;
   const ex = w / 2;
@@ -78,6 +78,16 @@ export function curvedRoof({ w, d, h, ridge, lift, sag = 0, ridgeSag = 0, color,
   slope(V(ex, 0, ez), V(ex, 0, -ez), V(rx, h, 0), V(rx, h, 0));      // phải
   slope(V(-ex, 0, -ez), V(-ex, 0, ez), V(-rx, h, 0), V(-rx, h, 0));  // trái
 
+  // Mặt dưới mái (tam giác đảo chiều, tối hơn) để dùng vật liệu một mặt và gộp chung với thân nhà
+  if (underside) {
+    const n = pos.length;
+    for (let i = 0; i < n; i += 9) {
+      for (const k of [0, 6, 3]) {
+        pos.push(pos[i + k], pos[i + k + 1] - 0.005, pos[i + k + 2]);
+        col.push(col[i + k] * undersideShade, col[i + k + 1] * undersideShade, col[i + k + 2] * undersideShade);
+      }
+    }
+  }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));

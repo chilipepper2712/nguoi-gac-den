@@ -24,7 +24,12 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - Thời gian chạy liên tục, ngày đêm tự động.
 - Ban đêm nhân vật làm việc của người trông coi; sự kiện đặc biệt có hướng dẫn riêng của sự kiện.
 - Người hành lễ là NPC được mời/thuê; người chơi lo chuẩn bị. NPC cấp cao chỉ mời được khi đạt ngưỡng.
-- Thua / tổn thất thật: đền phá sản, bị ma ám, người bị bắt mất thật.
+- **Thua**: chỉ phá sản là thua hẳn.
+- **Ma bắt người**: ma bắt rồi giấu người (không giết). Cứu được: ban đêm tìm và bắt đúng con ma đó bằng **một vật phẩm đã được làm phép**; đánh tới khi ma hết máu thì ma xin thả người để được tha.
+- **Hai chỉ số**: pháp lực (bảo vệ, vùng phủ) và uy tín (mở NPC, quyên góp, dân đến ở).
+- **Phạm vi demo** ~20–30 phút: intro → về đền → dọn 3 khu → sửa 1, xây 1 công trình → thuê 1 người → 3–5 ngày đêm, ma tăng dần → 1 minigame → kết thúc ở lễ hội đầu tiên.
+- **Intro**: truyện tranh dựng bằng cảnh 3D trong game, bỏ qua được; dùng lại cho cảnh cắt sự kiện. Hướng dẫn chơi diễn ra ở đền.
+- **UI**: thiết kế cho màn hình dọc trước; ngang dùng cùng HUD sắp xếp lại.
 - Tone: **ấm áp, hài** là nền; ban đêm không khí đáng sợ (tối, lạnh, sương) nhưng **ma dễ thương**.
 - Asset: hybrid. Code dựng công trình nhiều trạng thái, địa hình, cây thường (vài dáng đơn giản rải theo cụm). AI (Higgsfield) cho đồ hữu cơ nổi bật.
   Cây cổ thụ cạnh đền: dáng cây đa, **bỏ rễ thả từ tán** (Hunyuan LowPoly, `assets/props/hero_tree.glb`).
@@ -37,16 +42,11 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 ## Đề xuất, chờ người dùng xác nhận
 
 - Nhân vật: người khối low-poly ghép từ vài khối cứng, không dùng khung xương, vẽ hàng loạt bằng instancing (không dùng pixel sprite).
-- Hướng màn hình ưu tiên khi thiết kế UI: dọc; ngang dùng cùng HUD sắp xếp lại.
-- Intro: truyện tranh dựng bằng chính cảnh 3D trong game (khung hình + bóng thoại), bỏ qua được; hệ thống này dùng lại cho cảnh cắt của sự kiện. Hướng dẫn chơi diễn ra ở đền, không ở văn phòng.
 - Tone nền: ấm áp, hài trong thoại; rùng rợn là gia vị theo sự kiện đêm.
 - Có tạm dừng và tua nhanh (1x/2x/3x).
 - Khởi động đầu game (thoát vòng xoáy chết): khoản tiền thừa kế/tiền nghỉ việc ban đầu; dọn dẹp tốn công chứ không tốn tiền và tự tăng chút pháp lực; một NPC quen ông cậu giúp mấy ngày đầu.
 - Kìm lăn cầu tuyết về sau: chi phí duy trì, vùng bảo vệ càng rộng thì ranh giới phải giữ càng dài, sự kiện mạnh hơn theo quy mô.
-- Ma ám / người bị bắt là tổn thất nặng có thể cứu lại bằng nhiệm vụ; chỉ phá sản là thua hẳn.
-- Hai chỉ số tách riêng: **pháp lực** (bảo vệ, vùng phủ) và **uy tín** (mở NPC, quyên góp, dân đến ở).
 - Dốc vẽ thành bậc đá cho dễ nhận ra lối đi.
-- Phạm vi demo ~20–30 phút, kết thúc ở lễ hội đầu tiên.
 - Ý tưởng cốt truyện: người ở công ty cũ (ví dụ ông sếp) về sau bị ma ám, phải tìm đến chính ngôi đền.
 
 ## Bản thử phong cách (đã có)
@@ -71,14 +71,13 @@ Kết luận: SAM + chuyển đổi là mặc định cho đồ hữu cơ; Hunyu
 
 ## Câu hỏi còn mở
 
-1. Cái nào trong "phá sản / ma ám / bị bắt" là kết thúc game, cái nào là tổn thất cứu lại được?
-2. "Pháp lực hay uy tín" là một chỉ số hay hai?
-3. Phạm vi demo: cái gì bắt buộc phải có?
+1. "Đánh ma" trên điện thoại trông thế nào (chạm liên tục, kéo/vạch theo hình, ngắm và thả, hay chọn theo lượt)?
+2. Vật phẩm làm phép là gì (hình dáng, tên)? Ai làm phép — người hành lễ được thuê? Có giới hạn số lần dùng không?
+3. Nhà dân: dựng bằng code cùng ngôn ngữ với đền (đề xuất) hay dùng Kenney Modular Buildings (nhà kiểu châu Âu)? Ảnh so sánh: `?lab=props&code=houses&glb=modular/...` (file Modular ở `assets/_lab/`).
 
 ## Rủi ro thiết kế đã nêu
 
 - **Vòng lặp dương**: đền đẹp → đông khách → pháp lực mạnh → ít ma → đông khách hơn. Chiều ngược lại: đền tàn → ma nhiều → khách sợ → đền tàn mãi. Dễ thành lăn cầu tuyết (qua ngưỡng là hết thử thách) hoặc vòng xoáy chết (đầu game kẹt). Cần lực kéo ngược.
-- **Thiếu hành động chính ban đêm** nếu nhân vật không hành lễ (xem câu 6).
-- **Không có thua** thì yêu ma chỉ là trang trí (xem câu 7).
+- **Ban đêm**: đã có hành động chính (việc trông coi + cứu người bằng vật phẩm làm phép). Còn phải định nghĩa thao tác "đánh ma" trên điện thoại.
 - **Trùng game khác**: mở đầu gần y hệt Stardew Valley (bỏ việc văn phòng, nhận thừa kế ở quê); phần quản lý gần Graveyard Keeper; "niềm tin từ dân làm tài nguyên" gần Godus (bị chê vì vòng thu thập lặp lại nhàm).
 - **Pháp lý VN**: quy định nội dung số có cấm tuyên truyền mê tín dị đoan; cơ chế "viếng nhiều thì trừ được ma" nằm gần vùng xám. Giảm rủi ro bằng thế giới hư cấu rõ ràng, không gắn quyên góp với tiền thật. Nếu phát hành ở VN cần hỏi người làm cấp phép.
