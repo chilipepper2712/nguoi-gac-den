@@ -1,32 +1,28 @@
-// TẠM: cảnh giữ chỗ để kiểm tra renderer/ánh sáng/camera chạy được.
-// Xoá file này khi có cảnh thật (sau khi chốt lưới lục giác hay địa hình tự do).
+// TẠM: khối giữ chỗ cho ngôi đền ở tâm bản đồ, để kiểm tra tỉ lệ và ánh sáng.
+// Thay bằng mô hình đền thật ở bước test phong cách.
 
 import * as THREE from 'three';
 
-export function buildPlaceholder(scene) {
-  const ground = new THREE.Mesh(
-    new THREE.CylinderGeometry(16, 16, 1.2, 6),
-    new THREE.MeshStandardMaterial({ color: 0x9ccc7a, flatShading: true, roughness: 1 }),
-  );
-  ground.position.y = -0.6;
-  ground.receiveShadow = true;
-  scene.add(ground);
+export function buildPlaceholderTemple(y) {
+  const group = new THREE.Group();
+  group.name = 'placeholder-temple';
+  group.position.y = y;
 
-  const block = new THREE.Mesh(
-    new THREE.BoxGeometry(3, 2.4, 3),
-    new THREE.MeshStandardMaterial({ color: 0xf4efe4, flatShading: true, roughness: 1 }),
-  );
-  block.position.y = 1.2;
-  block.castShadow = true;
-  block.receiveShadow = true;
-  scene.add(block);
+  const mat = (color) => new THREE.MeshLambertMaterial({ color, flatShading: true });
 
-  const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(2.6, 1.4, 4),
-    new THREE.MeshStandardMaterial({ color: 0xd9744a, flatShading: true, roughness: 1 }),
-  );
-  roof.position.y = 3.1;
+  const base = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.25, 1.8), mat(0xcfc3aa));
+  base.position.y = 0.125;
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.9, 1.2), mat(0xf2ead8));
+  body.position.y = 0.7;
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(1.35, 0.7, 4), mat(0x9a5a3c));
+  roof.position.y = 1.5;
   roof.rotation.y = Math.PI / 4;
-  roof.castShadow = true;
-  scene.add(roof);
+  roof.scale.z = 0.8;
+
+  for (const m of [base, body, roof]) {
+    m.castShadow = true;
+    m.receiveShadow = true;
+    group.add(m);
+  }
+  return group;
 }

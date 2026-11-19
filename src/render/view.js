@@ -4,10 +4,11 @@
 import * as THREE from 'three';
 import { MapControls } from 'three/addons/controls/MapControls.js';
 import { CONFIG } from '../config.js';
-import { buildPlaceholder } from './placeholder.js';
+import { buildTerrainMesh, levelY } from './terrain.js';
+import { buildPlaceholderTemple } from './placeholder.js';
 
-export function createView(container) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+export function createView(container, state) {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, CONFIG.view.maxPixelRatio));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = true;
@@ -17,10 +18,12 @@ export function createView(container) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(CONFIG.view.background);
 
+  const centerY = levelY(CONFIG.terrain.templeLevel);
   const camera = new THREE.PerspectiveCamera(CONFIG.camera.fov, 1, 0.5, 500);
   const c = CONFIG.camera;
   camera.position.setFromSphericalCoords(c.distance, c.polarAngle, c.azimuth);
-  camera.lookAt(0, 0, 0);
+  camera.position.y += centerY;
+  camera.lookAt(0, centerY, 0);
 
   const controls = new MapControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -30,24 +33,27 @@ export function createView(container) {
   controls.maxDistance = c.maxDistance;
   controls.minPolarAngle = c.minPolarAngle;
   controls.maxPolarAngle = c.maxPolarAngle;
-  controls.target.set(0, 0, 0);
+  controls.target.set(0, centerY, 0);
   controls.update();
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0xb9c7a0, 1.4);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xb9c7a0, 1.5);
   scene.add(hemi);
 
-  const sun = new THREE.DirectionalLight(0xfff4e0, 2.2);
-  sun.position.set(18, 30, 12);
+  // Bóng đổ: một đèn mặt trời, hộp bóng ôm vừa bản đồ
+  const mapExtent = CONFIG.terrain.radius * CONFIG.terrainView.hexSize * 1.8;
+  const sun = new THREE.DirectionalLight(0xfff4e0, 2.0);
+  sun.position.set(mapExtent * 0.6, mapExtent * 1.1, mapExtent * 0.35);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
-  sun.shadow.camera.left = -30;
-  sun.shadow.camera.right = 30;
-  sun.shadow.camera.top = 30;
-  sun.shadow.camera.bottom = -30;
-  sun.shadow.bias = -0.0005;
+  Object.assign(sun.shadow.camera, {
+    left: -mapExtent, right: mapExtent, top: mapExtent, bottom: -mapExtent, near: 1, far: mapExtent * 4,
+  });
+  sun.shadow.bias = -0.0008;
+  sun.shadow.normalBias = 0.02;
   scene.add(sun);
 
-  buildPlaceholder(scene);
+  scene.add(buildTerrainMesh(state.map));
+  scene.add(buildPlaceholderTemple(centerY));
 
   function resize() {
     const w = container.clientWidth || window.innerWidth;

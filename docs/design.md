@@ -15,33 +15,41 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 ## Đã chốt
 
 - Nền tảng: web, Three.js (vendor, không build). Repo riêng, không dùng chung code với Turnbase1.
-- Phong cách hình: 3D low-poly, flat shading, màu pastel, camera nhìn chéo từ trên cao (gần isometric), mô hình khối đơn giản, người nhỏ.
-  Tham khảo (không lưu trong repo vì là ảnh game của người khác, repo public): Godus — địa hình nhiều tầng như đường đồng mức, nhà khối trắng mái cam, tông vàng xanh ấm; vài game/diorama dạng đảo lưới lục giác — ô lục giác có độ dày, cạnh sạch, nước xanh nhạt, ô trống có dấu "+" để mở rộng.
-- Nhân vật chính là nam (theo mô tả gốc).
-- Chuỗi UI tiếng Việt. Lưu game trên trình duyệt.
+- Thiết bị: điện thoại, cả dọc lẫn ngang. **Tối ưu hiệu năng từ đầu**: không nóng máy, không giật trên máy tầm trung.
+- Phong cách hình: 3D low-poly, flat shading, màu pastel, camera nhìn chéo từ trên cao, mô hình khối đơn giản.
+  Tham khảo (không lưu trong repo vì là ảnh game của người khác, repo public): Godus — địa hình nhiều tầng như đường đồng mức, nhà khối trắng mái cam, tông vàng xanh ấm; vài game/diorama đảo lưới lục giác — ô có độ dày, cạnh sạch, nước xanh nhạt, ô trống có dấu "+".
+  Ảnh tham khảo chỉ là phong cách vẽ. Kiến trúc: **phương Đông, đơn giản, hư cấu**.
+- Bản đồ: lưới lục giác, **đền ở tâm**, quanh là khu dân cư, đồi núi, đất trống. Có bậc cao thấp và dốc nối (đã có: `src/sim/terrain.js`). Càng về sau càng nhiều dân đến ở, làng mở rộng.
+- Camera: zoom xa để xây dựng/quản lý, zoom gần để bám nhân vật, chạm đâu nhân vật đi tới đó.
+- Thời gian chạy liên tục, ngày đêm tự động.
+- Ban đêm nhân vật làm việc của người trông coi; sự kiện đặc biệt có hướng dẫn riêng của sự kiện.
+- Người hành lễ là NPC được mời/thuê; người chơi lo chuẩn bị. NPC cấp cao chỉ mời được khi đạt ngưỡng.
+- Thua / tổn thất thật: đền phá sản, bị ma ám, người bị bắt mất thật.
+- Tone: pha trộn hài, ấm áp, rùng rợn tuỳ tình huống và nhiệm vụ.
+- Nhân vật chính là nam. Chuỗi UI tiếng Việt. Lưu game trên trình duyệt.
 
 ## Đề xuất, chờ người dùng xác nhận
 
-- Bản đồ lưới lục giác; mỗi khu đền là một cụm ô, dọn xong thì mở (ăn khớp "dọn từng khu một" và ô "+").
-- Camera zoom được: xa = xây dựng/quản lý, gần = bám nhân vật, chạm đâu đi tới đó.
-- Người hành lễ là NPC được mời/thuê; người chơi lo chuẩn bị (sân bãi, vật phẩm, lịch, đón khách).
-- Phạm vi demo ~20–30 phút: intro văn phòng ngắn → về đền → dọn 3 khu → sửa 1, xây 1 công trình → thuê 1 người → 3–5 ngày đêm, ma tăng dần → 1 minigame → kết thúc bằng lễ hội đầu tiên khi pháp lực phủ tới làng.
-- Bước đầu tiên: cảnh test phong cách (khu đền hoang + bản đã sửa + chuyển ngày → đêm có đèn và một con ma) để duyệt hình trước khi làm hệ thống.
-- Ý tưởng cốt truyện: người ở công ty cũ (ví dụ ông sếp) về sau bị ma ám, phải tìm đến chính ngôi đền — để đoạn intro văn phòng có vai trò về sau.
+- Nhân vật: người khối low-poly ghép từ vài khối cứng, không dùng khung xương, vẽ hàng loạt bằng instancing (không dùng pixel sprite).
+- Hướng màn hình ưu tiên khi thiết kế UI: dọc; ngang dùng cùng HUD sắp xếp lại.
+- Intro: truyện tranh dựng bằng chính cảnh 3D trong game (khung hình + bóng thoại), bỏ qua được; hệ thống này dùng lại cho cảnh cắt của sự kiện. Hướng dẫn chơi diễn ra ở đền, không ở văn phòng.
+- Tone nền: ấm áp, hài trong thoại; rùng rợn là gia vị theo sự kiện đêm.
+- Có tạm dừng và tua nhanh (1x/2x/3x).
+- Khởi động đầu game (thoát vòng xoáy chết): khoản tiền thừa kế/tiền nghỉ việc ban đầu; dọn dẹp tốn công chứ không tốn tiền và tự tăng chút pháp lực; một NPC quen ông cậu giúp mấy ngày đầu.
+- Kìm lăn cầu tuyết về sau: chi phí duy trì, vùng bảo vệ càng rộng thì ranh giới phải giữ càng dài, sự kiện mạnh hơn theo quy mô.
+- Ma ám / người bị bắt là tổn thất nặng có thể cứu lại bằng nhiệm vụ; chỉ phá sản là thua hẳn.
+- Hai chỉ số tách riêng: **pháp lực** (bảo vệ, vùng phủ) và **uy tín** (mở NPC, quyên góp, dân đến ở).
+- Dốc vẽ thành bậc đá cho dễ nhận ra lối đi.
+- Phạm vi demo ~20–30 phút, kết thúc ở lễ hội đầu tiên.
+- Ý tưởng cốt truyện: người ở công ty cũ (ví dụ ông sếp) về sau bị ma ám, phải tìm đến chính ngôi đền.
 
 ## Câu hỏi còn mở
 
-1. Lưới lục giác hay địa hình tự do kiểu Godus?
-2. Camera zoom như đề xuất có ổn không, hay muốn camera gần hơn hẳn?
-3. Điện thoại cầm dọc hay máy tính màn ngang?
-4. Ảnh tham khảo chỉ là phong cách vẽ, hay lấy cả kiến trúc Địa Trung Hải làm bối cảnh?
-5. Thời gian chạy liên tục theo đồng hồ (có tạm dừng) hay chia lượt ngày/đêm?
-6. Ban đêm khi ma đến, nhân vật làm gì?
-7. Có trạng thái thua không? Đầu game thoát vòng "ít khách → ít pháp lực" bằng cách nào?
-8. Người hành lễ là NPC như đề xuất — đúng chưa?
-9. Trong phạm vi demo, cái gì bắt buộc phải có?
-10. Tone chủ đạo: hài, ấm áp, hay rùng rợn?
-11. Nguồn asset: dựng bằng code, bộ CC0 có sẵn, sinh bằng AI, hay tự vẽ/dựng?
+1. Cái nào trong "phá sản / ma ám / bị bắt" là kết thúc game, cái nào là tổn thất cứu lại được?
+2. "Pháp lực hay uy tín" là một chỉ số hay hai?
+3. Tone nền mặc định là gì (để quyết bảng màu đêm, thiết kế ma, nhạc)?
+4. Nguồn asset: dựng bằng code, bộ CC0, sinh bằng AI, hay tự dựng?
+5. Phạm vi demo: cái gì bắt buộc phải có?
 
 ## Rủi ro thiết kế đã nêu
 

@@ -10,6 +10,7 @@ npm run serve                                   # http://localhost:8080 (python3
 npm test                                        # node --test, logic thuần
 node tools/shot.mjs                             # chụp shots/shot.png (1280x800)
 node tools/shot.mjs --size 390x844 --out shots/phone.png
+node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện draw calls
 ```
 
 - Không có bước build. Three.js vendor sẵn ở `vendor/three/`, nạp qua import map trong `index.html`.
@@ -23,7 +24,18 @@ node tools/shot.mjs --size 390x844 --out shots/phone.png
 - State phải JSON-serializable (không class, không Map/Set, không tham chiếu vòng). Đổi cấu trúc state thì tăng `SAVE_VERSION` trong `src/sim/state.js`.
 - `src/render/` — chỉ đọc state để vẽ, không sửa luật.
 - `src/config.js` — mọi con số cân bằng và tham số hiển thị. Không rải số "ma thuật" trong logic.
-- `src/render/placeholder.js` là cảnh tạm, xoá khi có cảnh thật.
+- `src/sim/hex.js` toán lục giác (axial, đỉnh nhọn, hướng d ↔ góc 60°·d). `src/sim/terrain.js` sinh bản đồ bậc + dốc, có luật đi lại (`canStep`).
+- `src/render/placeholder.js` là khối đền tạm, thay khi có mô hình đền thật.
+
+## Hiệu năng (bắt buộc — mục tiêu: điện thoại tầm trung chạy mượt, không nóng máy)
+
+- Vật thể lặp lại (cây, đá, nhà, người, ma) dùng `InstancedMesh` hoặc gộp geometry. Không tạo `Mesh` riêng cho từng cái.
+- Địa hình tĩnh là một mesh duy nhất (`src/render/terrain.js`). Đổi địa hình thì dựng lại mesh, không thêm mesh theo ô.
+- Vật liệu: `MeshLambertMaterial` hoặc rẻ hơn. Không dùng `MeshStandardMaterial`/`MeshPhysicalMaterial`.
+- Chỉ một đèn đổ bóng (mặt trời/trăng). Không rải `PointLight`/`SpotLight` cho đèn lồng hay vùng pháp lực: làm giả bằng màu phát sáng, sprite, hoặc shader/texture trên mặt đất.
+- Logic mô phỏng (AI dân, tìm đường) chạy theo nhịp thấp, không chạy mỗi khung hình.
+- Theo dõi bằng `?debug=1` (draw calls, số tam giác). Ngân sách tạm: ≤ 100 draw calls, ≤ 150k tam giác.
+  FPS đo trong headless (SwiftShader, render bằng CPU) không phản ánh máy thật; hiệu năng thật phải thử trên điện thoại.
 
 ## Quy tắc nội dung (bắt buộc)
 
