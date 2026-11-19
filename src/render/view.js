@@ -5,7 +5,7 @@ import { MapControls } from 'three/addons/controls/MapControls.js';
 import { CONFIG } from '../config.js';
 import { hexToWorld, key, worldToHex } from '../sim/hex.js';
 import { buildTerrainMesh, levelY } from './terrain.js';
-import { buildFlora } from './flora.js';
+import { buildFlora, buildRuinDebris } from './flora.js';
 import { buildStairs } from './stairs.js';
 import { buildTemple, buildGate } from './props/temple.js';
 import { buildGhost } from './ghost.js';
@@ -55,10 +55,19 @@ export function createView(container, state) {
   const terrain = buildTerrainMesh(state.map);
   const flora = buildFlora(state.map);
   const stairs = buildStairs(state.map);
-  scene.add(terrain, flora, stairs);
+  scene.add(terrain, flora.object, stairs);
   applyFakeLight(terrain, { aura: true });
-  applyFakeLight(flora);
   applyFakeLight(stairs);
+
+  // Đồ đổ nát quanh đền: chỉ hiện khi đền còn hoang
+  const templeFrame = new THREE.Object3D();
+  templeFrame.position.set(0, centerY, 0);
+  templeFrame.rotation.y = CONFIG.temple.rotation;
+  let debris = null;
+  const debrisReady = buildRuinDebris(templeFrame).then((mesh) => {
+    debris = mesh;
+    scene.add(mesh);
+  }).catch((e) => console.warn('Thiếu đồ đổ nát', e));
 
   // Đền + cổng: dựng lại khi trạng thái đổi
   const lamps = createLamps();
@@ -118,11 +127,15 @@ export function createView(container, state) {
   window.addEventListener('resize', resize);
   resize();
 
-  const view = { renderer, scene, camera, controls, lights: { hemi, sun }, render, resize, onFrame: null, night: 0 };
+  const view = {
+    renderer, scene, camera, controls, lights: { hemi, sun }, render, resize, onFrame: null, night: 0,
+    ready: Promise.all([flora.ready, debrisReady]),
+  };
 
   function render(st, dt) {
     const cond = st.temple.condition;
     if (cond !== builtCondition) rebuildTemple(cond);
+    if (debris) debris.visible = cond < 0.5;
     const s = sky.update(st.clock.t);
     view.night = s.night;
     const auraTarget = THREE.MathUtils.lerp(CONFIG.aura.minRadius, CONFIG.aura.maxRadius, cond);

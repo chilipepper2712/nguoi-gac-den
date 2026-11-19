@@ -44,7 +44,7 @@ function frame(now) {
   if (panel) panel.update();
   frames += 1;
   // tools/shot.mjs chờ cờ này trước khi chụp màn hình
-  if (frames === 3) labReady.then(() => { window.__ready = true; });
+  if (frames === 3) Promise.all([labReady, view.ready]).then(() => { window.__ready = true; });
 
   if (debug) {
     fpsFrames += 1;

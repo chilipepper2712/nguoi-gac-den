@@ -1,8 +1,8 @@
 // Cây cỏ, đá trên bản đồ. Dữ liệu thuần, nằm trong state để sau này dọn dẹp / xây dựng đụng tới.
 //
 // map.flora: [{ q, r, kind, variant, dx, dz, rot, s }]
-//   kind    : 'tree' | 'bush' | 'rock'
-//   variant : chỉ số dáng (render quyết định hình)
+//   kind    : 'tree' | 'bush' | 'rock' | 'small' (cỏ, hoa, nấm, gốc cây)
+//   variant : chỉ số trong CONFIG.flora.models[kind]
 //   dx, dz  : lệch khỏi tâm ô, tính theo cạnh ô (|dx|,|dz| < ~0.5)
 //   rot, s  : xoay quanh trục đứng (rad), tỉ lệ
 // map.landmarks: [{ kind: 'heroTree', q, r }]
@@ -12,6 +12,7 @@ import { distance } from './hex.js';
 import { nextRandom } from './rng.js';
 
 const F = CONFIG.flora;
+const count = (kind) => F.models[kind].length;
 
 // Nhiễu giá trị đơn giản theo seed, dùng để gom cây thành cụm rừng.
 function hash(seed, x, y) {
@@ -60,7 +61,7 @@ export function generateFlora(state) {
 
     if (t.type === 'rock') {
       for (const [dx, dz] of spots(1 + Math.floor(rnd() * 2))) {
-        map.flora.push({ q: t.q, r: t.r, kind: 'rock', variant: Math.floor(rnd() * F.variants.rock), dx, dz, rot: rnd() * 6.283, s: 0.8 + rnd() * 0.5 });
+        map.flora.push({ q: t.q, r: t.r, kind: 'rock', variant: Math.floor(rnd() * count('rock')), dx, dz, rot: rnd() * 6.283, s: 0.8 + rnd() * 0.5 });
       }
       continue;
     }
@@ -77,13 +78,14 @@ export function generateFlora(state) {
       if (n === 0) {
         // Ô trống: thỉnh thoảng có bụi hoặc đá nhỏ
         const roll = rnd();
-        if (roll < F.bushChance) map.flora.push({ q: t.q, r: t.r, kind: 'bush', variant: Math.floor(rnd() * F.variants.bush), dx, dz, rot: rnd() * 6.283, s: 0.8 + rnd() * 0.4 });
-        else if (roll < F.bushChance + F.rockChance) map.flora.push({ q: t.q, r: t.r, kind: 'rock', variant: Math.floor(rnd() * F.variants.rock), dx, dz, rot: rnd() * 6.283, s: 0.4 + rnd() * 0.3 });
+        if (roll < F.bushChance) map.flora.push({ q: t.q, r: t.r, kind: 'bush', variant: Math.floor(rnd() * count('bush')), dx, dz, rot: rnd() * 6.283, s: 0.8 + rnd() * 0.4 });
+        else if (roll < F.bushChance + F.rockChance) map.flora.push({ q: t.q, r: t.r, kind: 'rock', variant: 2 + Math.floor(rnd() * 2), dx, dz, rot: rnd() * 6.283, s: 0.8 + rnd() * 0.5 });
+        else if (roll < F.bushChance + F.rockChance + F.smallChance) map.flora.push({ q: t.q, r: t.r, kind: 'small', variant: Math.floor(rnd() * count('small')), dx, dz, rot: rnd() * 6.283, s: 0.8 + rnd() * 0.4 });
         continue;
       }
-      // Bậc cao nghiêng về cây lá kim (dáng 1); thấp nghiêng về cây tròn
-      let variant = Math.floor(rnd() * F.variants.tree);
-      if (t.h >= 3 && rnd() < 0.5) variant = 1;
+      // Bậc cao nghiêng về cây lá kim
+      let variant = Math.floor(rnd() * count('tree'));
+      if (t.h >= 3 && rnd() < 0.5) variant = F.pineVariants[Math.floor(rnd() * F.pineVariants.length)];
       map.flora.push({ q: t.q, r: t.r, kind: 'tree', variant, dx, dz, rot: rnd() * 6.283, s: 0.8 + rnd() * 0.45 });
     }
   }

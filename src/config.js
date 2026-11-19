@@ -26,7 +26,16 @@ export const CONFIG = {
     dirtTreeChance: 0.05,
     bushChance: 0.12,     // ô trống có bụi
     rockChance: 0.06,     // ô trống có đá nhỏ
-    variants: { tree: 4, bush: 2, rock: 3 }, // số dáng mỗi loại (render phải có đủ)
+    smallChance: 0.3,     // ô trống có cỏ / hoa / nấm / gốc cây
+    // Model cho từng loại (assets/kenney/<đường dẫn>.glb). Sim chọn chỉ số dáng trong danh sách này.
+    models: {
+      tree: ['nature/tree_default', 'nature/tree_oak', 'nature/tree_fat', 'nature/tree_tall', 'nature/tree_simple', 'nature/tree_pineRoundA', 'nature/tree_pineTallA'],
+      bush: ['nature/plant_bush', 'nature/plant_bushLarge', 'nature/plant_bushSmall'],
+      rock: ['nature/stone_largeA', 'nature/stone_tallA', 'nature/rock_smallA', 'nature/stone_smallA'],
+      small: ['nature/grass', 'nature/flower_redA', 'nature/flower_yellowA', 'nature/mushroom_tanGroup', 'nature/stump_old'],
+    },
+    pineVariants: [5, 6],  // chỉ số cây lá kim trong models.tree (ưu tiên ở bậc cao)
+    modelScale: { tree: 0.58, bush: 0.85, rock: 0.5, small: 0.85 },
   },
   time: {
     dayLengthSec: 480,    // một ngày trong game = 8 phút thật (tốc độ 1x)
@@ -37,6 +46,13 @@ export const CONFIG = {
   temple: {
     rotation: Math.PI / 6, // mặt tiền đền hướng theo hướng lục giác 1 (gần hướng camera mặc định)
     gateHex: [0, 2],       // ô đặt cổng, cùng hướng mặt tiền
+    // Đồ đổ nát quanh đền khi còn hoang (toạ độ cục bộ của đền, mặt tiền +z). Sẽ thành việc dọn dẹp trong gameplay.
+    ruinDebris: [
+      ['survival/tree-log', 1.55, 0.9, 0.4], ['survival/resource-planks', -1.5, 1.1, 2.0], ['survival/box-open', -1.25, 1.55, 0.3],
+      ['survival/barrel', 1.35, 1.5, 0], ['survival/structure', -1.7, -0.6, 0.2], ['survival/signpost', 0.75, 2.1, -0.5],
+      ['nature/stump_old', 1.8, -0.5, 1.1], ['nature/log', -0.6, 1.9, 1.3], ['nature/grass', 0.4, 1.7, 0], ['nature/grass', -1.9, 0.4, 0.8],
+      ['nature/plant_bushSmall', 1.9, 0.2, 0], ['nature/mushroom_tanGroup', -1.1, -1.2, 0],
+    ],
   },
   aura: {
     minRadius: 2.2,       // bán kính vùng pháp lực khi đền hoang tàn (tạm, sau tính từ pháp lực)

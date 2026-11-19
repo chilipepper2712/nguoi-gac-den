@@ -30,7 +30,7 @@ test('dáng nằm trong số dáng render có, vị trí nằm trong ô', () => 
   for (const seed of SEEDS) {
     const { map } = createState({ seed });
     for (const f of map.flora) {
-      assert.ok(Number.isInteger(f.variant) && f.variant >= 0 && f.variant < CONFIG.flora.variants[f.kind]);
+      assert.ok(Number.isInteger(f.variant) && f.variant >= 0 && f.variant < CONFIG.flora.models[f.kind].length);
       assert.ok(Math.hypot(f.dx, f.dz) < 0.75, 'lệch quá xa tâm ô');
     }
   }
@@ -50,4 +50,12 @@ test('bản đồ có cây cổ thụ cạnh đền, trên ô đất', () => {
   const hero = map.landmarks.find((l) => l.kind === 'heroTree');
   assert.ok(hero);
   assert.notEqual(map.tiles[key(hero.q, hero.r)].type, 'water');
+});
+
+test('mọi model khai báo cho cây cỏ đều có file', async () => {
+  const { existsSync } = await import('node:fs');
+  for (const list of Object.values(CONFIG.flora.models)) {
+    for (const m of list) assert.ok(existsSync(new URL(`../assets/kenney/${m}.glb`, import.meta.url)), m);
+  }
+  for (const [m] of CONFIG.temple.ruinDebris) assert.ok(existsSync(new URL(`../assets/kenney/${m}.glb`, import.meta.url)), m);
 });

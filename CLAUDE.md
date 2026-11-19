@@ -43,6 +43,10 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
 ## Asset
 
 - **Dựng bằng code**: công trình có nhiều trạng thái (đền, nhà dân, công trình: hoang → dọn → sửa → nâng cấp), địa hình, người.
+- **Kenney (CC0)**: Nature Kit, Survival Kit (Hexagon Kit có nhưng chưa dùng: nhà kiểu Tây). Zip gốc không lưu trong repo — người dùng tự tải ở kenney.nl (trang chặn tải tự động, không lách).
+  Nhập: `node tools/import_kenney.mjs --kit nature|survival --src "<thư mục GLB đã giải nén>" --out assets/kenney/<kit> <tên model...>`.
+  Công cụ tô lại theo **bảng màu game** (bảng `NATURE` theo tên vật liệu, `ATLAS` theo ô màu của texture). Không dùng màu gốc Kenney (xanh ngọc, cam đậm lệch ảnh tham khảo).
+  Model cây cỏ khai báo trong `CONFIG.flora.models`; đồ đổ nát quanh đền trong `CONFIG.temple.ruinDebris`. Nạp bằng `src/render/models.js` (`loadGeometry`).
 - **AI (Higgsfield)**: đồ hữu cơ, đứng một mình, không cần trạng thái (cây đặc biệt, đá, đồ trang trí, con vật, hình ma). Quy trình rẻ nhất đã thử:
   1. Ảnh nguồn bằng `gpt_image_2_6` (0.25 credit). Prompt mẫu:
      `Single low-poly 3D game asset: <mô tả vật>. Flat-shaded faceted polygons, no texture detail, soft pastel palette (<màu>). Isolated, centered, entire object in frame, three-quarter view from slightly above, plain pure white background, no ground, no shadow, no text.`

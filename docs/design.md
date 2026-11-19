@@ -28,7 +28,10 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - Tone: **ấm áp, hài** là nền; ban đêm không khí đáng sợ (tối, lạnh, sương) nhưng **ma dễ thương**.
 - Asset: hybrid. Code dựng công trình nhiều trạng thái, địa hình, cây thường (vài dáng đơn giản rải theo cụm). AI (Higgsfield) cho đồ hữu cơ nổi bật.
   Cây cổ thụ cạnh đền: dáng cây đa, **bỏ rễ thả từ tán** (Hunyuan LowPoly, `assets/props/hero_tree.glb`).
-  Bộ Kenney CC0 người dùng chọn: Hexagon Kit, Nature Kit, Survival Kit (chưa tải được: kenney.nl chặn tải tự động, người dùng tự tải).
+  Bộ Kenney CC0 người dùng chọn: Hexagon Kit, Nature Kit, Survival Kit (người dùng tự tải vì kenney.nl chặn tải tự động).
+  Giữ **bảng màu của game** (theo ảnh tham khảo), tô lại Kenney cho khớp; không lấy màu gốc Kenney.
+  Đang dùng: cây (7 dáng), bụi, đá, cỏ/hoa/nấm/gốc cây từ Nature Kit; đồ đổ nát quanh đền hoang (gỗ mục, ván, thùng, giàn gỗ, biển chỉ đường) từ Survival Kit.
+  Hexagon Kit chưa dùng (nhà kiểu châu Âu, địa hình đã tự dựng).
 - Nhân vật chính là nam. Chuỗi UI tiếng Việt. Lưu game trên trình duyệt.
 
 ## Đề xuất, chờ người dùng xác nhận
