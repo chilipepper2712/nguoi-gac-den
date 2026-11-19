@@ -37,6 +37,19 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
 - Theo dõi bằng `?debug=1` (draw calls, số tam giác). Ngân sách tạm: ≤ 100 draw calls, ≤ 150k tam giác.
   FPS đo trong headless (SwiftShader, render bằng CPU) không phản ánh máy thật; hiệu năng thật phải thử trên điện thoại.
 
+## Asset
+
+- **Dựng bằng code**: công trình có nhiều trạng thái (đền, nhà dân, công trình: hoang → dọn → sửa → nâng cấp), địa hình, người.
+- **AI (Higgsfield)**: đồ hữu cơ, đứng một mình, không cần trạng thái (cây đặc biệt, đá, đồ trang trí, con vật, hình ma). Quy trình rẻ nhất đã thử:
+  1. Ảnh nguồn bằng `gpt_image_2_6` (0.25 credit). Prompt mẫu:
+     `Single low-poly 3D game asset: <mô tả vật>. Flat-shaded faceted polygons, no texture detail, soft pastel palette (<màu>). Isolated, centered, entire object in frame, three-quarter view from slightly above, plain pure white background, no ground, no shadow, no text.`
+  2. Chuyển 3D bằng `sam_3_3d` (1 credit). Lỗi thì thử lại **một lần** với `prompt` là tên vật (job lỗi được hoàn credit).
+     `hunyuan3d_v3_image_to_3d` + `generate_type: LowPoly` (14 credit, ~6 phút, texture 4096² ~10MB) chỉ dùng cho asset nổi bật khi SAM ra hình kém. Meshy (25) và Tripo (31) chưa cần.
+  3. `npm run flatten -- in.glb out.glb --ratio 0.2 --palette "<nhóm tối→sáng>;<nhóm>"`: giảm tam giác, bỏ texture, ép màu từng mặt về bảng màu game.
+  4. Xem cạnh nhau trên địa hình: `?lab=props&glb=a.glb,b.glb` (file trong `assets/_lab/`, thư mục này không commit).
+- Luôn báo giá trước (`get_cost: true` cho 3D, `estimate_image_cost` cho ảnh). Không sinh hàng loạt khi chưa thử 1 món.
+- Ngân sách mỗi asset sau khi chuyển: ≤ 3k tam giác, không texture.
+
 ## Quy tắc nội dung (bắt buộc)
 
 - **Không gợi tôn giáo có thật nào**: không thập giá, chữ vạn, tượng Phật, mái vòm xanh kiểu nhà thờ Hy Lạp, chữ Phạn/Hán trên biển, tràng hạt, áo cà sa... Kiến trúc đền là kiểu hư cấu.

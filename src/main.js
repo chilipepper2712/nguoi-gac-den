@@ -11,6 +11,12 @@ const state = createState({ seed });
 const view = createView(document.getElementById('stage'), state);
 const status = document.getElementById('status');
 
+// Cảnh thử asset (không phải gameplay)
+let labReady = Promise.resolve();
+if (params.get('lab') === 'props') {
+  labReady = import('./render/lab-props.js').then((m) => m.setupPropsLab(view, state, params));
+}
+
 let last = performance.now();
 let frames = 0;
 let fpsFrames = 0;
@@ -22,7 +28,7 @@ function frame(now) {
   view.render(state, dt);
   frames += 1;
   // tools/shot.mjs chờ cờ này trước khi chụp màn hình
-  if (frames === 3) window.__ready = true;
+  if (frames === 3) labReady.then(() => { window.__ready = true; });
 
   if (debug) {
     fpsFrames += 1;

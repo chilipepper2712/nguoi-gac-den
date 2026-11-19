@@ -65,10 +65,13 @@ export function createView(container, state) {
   window.addEventListener('resize', resize);
   resize();
 
-  function render(/* state, dt */) {
+  const view = { renderer, scene, camera, controls, lights: { hemi, sun }, render, resize, onFrame: null };
+
+  function render(state, dt) {
     controls.update();
+    if (view.onFrame) view.onFrame(dt);
     renderer.render(scene, camera);
   }
 
-  return { renderer, scene, camera, controls, lights: { hemi, sun }, render, resize };
+  return view;
 }

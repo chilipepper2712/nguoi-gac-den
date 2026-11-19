@@ -43,12 +43,24 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - Phạm vi demo ~20–30 phút, kết thúc ở lễ hội đầu tiên.
 - Ý tưởng cốt truyện: người ở công ty cũ (ví dụ ông sếp) về sau bị ma ám, phải tìm đến chính ngôi đền.
 
+## Thử nghiệm asset AI (cây đa, 2026-11-19)
+
+Cùng một ảnh nguồn (gpt_image_2_6, 0.25 credit), so trên địa hình thật:
+
+| Cách | Credit | Thời gian | Kết quả thô | Sau `flatten_glb` |
+|---|---|---|---|---|
+| Dựng bằng code | 0 | — | 1.0k tam giác, chung chung, thiếu nét cây đa | — |
+| SAM 3 3D | 1 | ~1 phút | 13.3k tam giác + texture 1MB; một cụm lá thấp che thân | 2.7k tam giác, ~190KB, không texture, đúng bảng màu |
+| Hunyuan3D LowPoly | 14 | ~6 phút | 4.4k tam giác + texture 4096² ~10MB; thân xoắn, rễ phụ rõ nhất | 2.7k tam giác, ~190KB |
+
+Kết luận: SAM + chuyển đổi là mặc định cho đồ hữu cơ; Hunyuan cho vài asset nổi bật. Code vẫn làm công trình nhiều trạng thái.
+
 ## Câu hỏi còn mở
 
 1. Cái nào trong "phá sản / ma ám / bị bắt" là kết thúc game, cái nào là tổn thất cứu lại được?
 2. "Pháp lực hay uy tín" là một chỉ số hay hai?
 3. Tone nền mặc định là gì (để quyết bảng màu đêm, thiết kế ma, nhạc)?
-4. Nguồn asset: dựng bằng code, bộ CC0, sinh bằng AI, hay tự dựng?
+4. Nguồn asset: đã thống nhất hybrid; còn chờ tên/link bộ asset free người dùng lấy để kiểm license và bảng màu.
 5. Phạm vi demo: cái gì bắt buộc phải có?
 
 ## Rủi ro thiết kế đã nêu
