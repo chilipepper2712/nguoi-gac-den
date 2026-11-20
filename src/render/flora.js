@@ -87,18 +87,20 @@ export function buildFlora(map) {
   return { object: group, ready: Promise.all(jobs) };
 }
 
-// Đồ đổ nát quanh đền (gộp một geometry, một draw call). transform: Object3D đặt theo đền.
-export async function buildRuinDebris(transform) {
+// Đồ đổ nát quanh đền (gộp một geometry, một draw call). items: các món chưa dọn (state.temple.debris).
+// transform: Object3D đặt theo đền. Trả về null nếu không còn món nào.
+export async function buildRuinDebris(transform, items) {
+  if (!items.length) return null;
   const { mergeGeometries } = await import('three/addons/utils/BufferGeometryUtils.js');
   const parts = [];
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
   const up = new THREE.Vector3(0, 1, 0);
   const sc = CONFIG.flora.modelScale.small;
-  for (const [path, x, z, rot] of CONFIG.temple.ruinDebris) {
-    const geo = await loadGeometry(path);
-    q.setFromAxisAngle(up, rot);
-    parts.push(geo.clone().applyMatrix4(m.compose(new THREE.Vector3(x, 0, z), q, new THREE.Vector3(sc, sc, sc))));
+  for (const d of items) {
+    const geo = await loadGeometry(d.model);
+    q.setFromAxisAngle(up, d.rot);
+    parts.push(geo.clone().applyMatrix4(m.compose(new THREE.Vector3(d.lx, 0, d.lz), q, new THREE.Vector3(sc, sc, sc))));
   }
   const mesh = new THREE.Mesh(mergeGeometries(parts), withFakeLight(new THREE.MeshLambertMaterial({ vertexColors: true })));
   mesh.name = 'ruin-debris';

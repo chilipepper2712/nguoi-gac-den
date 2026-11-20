@@ -15,6 +15,7 @@ import { createLamps } from './lamps.js';
 import { createSky } from './sky.js';
 import { applyFakeLight, fakeLightUniforms } from './fakelight.js';
 import { playerOf } from '../sim/people.js';
+import { auraRadius } from '../sim/temple.js';
 
 export function createView(container, state) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -67,10 +68,20 @@ export function createView(container, state) {
   templeFrame.position.set(0, centerY, 0);
   templeFrame.rotation.y = CONFIG.temple.rotation;
   let debris = null;
-  const debrisReady = buildRuinDebris(templeFrame).then((mesh) => {
-    debris = mesh;
-    scene.add(mesh);
-  }).catch((e) => console.warn('Thiếu đồ đổ nát', e));
+  let debrisSig = '';
+  let debrisBuilding = Promise.resolve();
+  function syncDebris(st) {
+    const sig = st.temple.debris.map((d) => (d.done ? '1' : '0')).join('');
+    if (sig === debrisSig) return debrisBuilding;
+    debrisSig = sig;
+    debrisBuilding = buildRuinDebris(templeFrame, st.temple.debris.filter((d) => !d.done)).then((mesh) => {
+      if (debris) { scene.remove(debris); debris.geometry.dispose(); }
+      debris = mesh;
+      if (mesh) scene.add(mesh);
+    }).catch((e) => console.warn('Thiếu đồ đổ nát', e));
+    return debrisBuilding;
+  }
+  const debrisReady = syncDebris(state);
 
   // Đền + cổng: dựng lại khi trạng thái đổi
   const lamps = createLamps('temple');
@@ -158,10 +169,10 @@ export function createView(container, state) {
   function render(st, dt) {
     const cond = st.temple.condition;
     if (cond !== builtCondition) rebuildTemple(cond);
-    if (debris) debris.visible = cond < 0.5;
+    syncDebris(st);
     const s = sky.update(st.clock.t);
     view.night = s.night;
-    const auraTarget = THREE.MathUtils.lerp(CONFIG.aura.minRadius, CONFIG.aura.maxRadius, cond);
+    const auraTarget = auraRadius(st.stats);
     auraNow = auraNow < 0 ? auraTarget : THREE.MathUtils.damp(auraNow, auraTarget, 2, dt);
     fakeLightUniforms.uAuraRadius.value = auraNow;
     lamps.update(s.night);

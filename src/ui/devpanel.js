@@ -3,6 +3,7 @@
 
 import { clockLabel } from '../sim/clock.js';
 import { openTalisman } from './talisman.js';
+import { CONFIG } from '../config.js';
 
 export function createDevPanel(state) {
   const el = document.createElement('div');
@@ -36,7 +37,14 @@ export function createDevPanel(state) {
     const i = speeds.indexOf(state.clock.speed);
     state.clock.speed = speeds[(i + 1) % speeds.length];
   });
-  temple.addEventListener('click', () => { state.temple.condition = state.temple.condition > 0.5 ? 0 : 1; });
+  // Đổi nhanh hoang/sửa (để xem hình): đã sửa = dọn hết đổ nát, pháp lực đầy; hoang = trả lại như đầu game
+  temple.addEventListener('click', () => {
+    const fixed = state.temple.condition <= 0.5;
+    state.temple.condition = fixed ? 1 : 0;
+    for (const d of state.temple.debris) d.done = fixed;
+    state.temple.zonesDone = state.temple.zonesDone.map(() => fixed);
+    state.stats.power = fixed ? CONFIG.aura.fullPower : 0;
+  });
   $('#dp-tal1').addEventListener('click', () => openTalisman({ count: 1 }));
   $('#dp-tal3').addEventListener('click', () => openTalisman({ count: 3 }));
 

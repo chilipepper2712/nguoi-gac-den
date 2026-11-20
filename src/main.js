@@ -4,6 +4,9 @@ import { createState } from './sim/state.js';
 import { tickClock } from './sim/clock.js';
 import { tickPeople, tickPlayer, commandMove, playerOf } from './sim/people.js';
 import { createTapInput } from './ui/input.js';
+import { createHud } from './ui/hud.js';
+import { createWorldUi } from './ui/worldui.js';
+import { tickTasks, commandClean, debrisWorld } from './sim/temple.js';
 import { worldToHex, hexToWorld } from './sim/hex.js';
 import { levelY } from './render/terrain.js';
 import { CONFIG } from './config.js';
@@ -19,7 +22,12 @@ const debug = params.get('debug') === '1';
 const state = createState({ seed });
 // Tham số URL để xem nhanh: ?t=0.9 (giờ trong ngày), ?temple=1 (đền đã sửa), ?pause=1
 if (params.has('t')) state.clock.t = Number(params.get('t'));
-if (params.has('temple')) state.temple.condition = Number(params.get('temple'));
+if (params.has('temple') && Number(params.get('temple')) > 0.5) {
+  state.temple.condition = 1;
+  for (const d of state.temple.debris) d.done = true;
+  state.temple.zonesDone = state.temple.zonesDone.map(() => true);
+  state.stats.power = CONFIG.aura.fullPower;
+}
 if (params.get('pause') === '1') state.clock.paused = true;
 
 const view = createView(document.getElementById('stage'), state);
@@ -53,11 +61,37 @@ if (params.has('az')) {
 }
 const panel = params.get('panel') === '0' ? null : createDevPanel(state);
 
-// Chạm ô trên bản đồ → nhân vật chính đi tới đó
-createTapInput(view, ({ point }) => {
+const hud = createHud(state);
+const worldUi = createWorldUi(state, view);
+if (!debug) document.getElementById('hud').hidden = true;
+
+// Chạm trên bản đồ: trúng đồ đổ nát chưa dọn (theo khoảng cách trên màn hình) → đi tới dọn; không thì đi tới ô đó
+function pickDebris(sx, sy) {
+  const r = view.renderer.domElement.getBoundingClientRect();
+  let best = null;
+  for (const d of state.temple.debris) {
+    if (d.done) continue;
+    const [x, z] = debrisWorld(d);
+    const v = new THREE.Vector3(x, levelY(CONFIG.terrain.templeLevel) + 0.1, z).project(view.camera);
+    const dist = Math.hypot(((v.x + 1) / 2) * r.width - sx, ((1 - v.y) / 2) * r.height - sy);
+    if (dist < CONFIG.input.pickRadius && (!best || dist < best.dist)) best = { d, dist };
+  }
+  return best && best.d;
+}
+createTapInput(view, ({ point, screen }) => {
+  const player = playerOf(state);
+  const d = pickDebris(screen.x, screen.y);
+  if (d) {
+    if (commandClean(state, player.id, d.id)) {
+      const [x, z] = debrisWorld(d);
+      view.showMarker(x, levelY(CONFIG.terrain.templeLevel), z);
+    }
+    return;
+  }
   if (!point) return;
+  player.task = null; // đi chỗ khác thì bỏ việc đang làm
   const [q, r] = worldToHex(point.x, point.z, CONFIG.terrainView.hexSize);
-  const dest = commandMove(state, playerOf(state).id, q, r);
+  const dest = commandMove(state, player.id, q, r);
   if (!dest) return;
   const [x, z] = hexToWorld(dest[0], dest[1], CONFIG.terrainView.hexSize);
   view.showMarker(x, levelY(state.map.tiles[`${dest[0]},${dest[1]}`].h), z);
@@ -91,9 +125,11 @@ function frame(now) {
   tickClock(state, dt);
   // Di chuyển nội suy mỗi khung (rẻ); tìm đường chỉ khi một người chọn điểm đến mới
   if (!state.clock.paused || params.get('walk') === '1') tickPeople(state, dt * (state.clock.paused ? 1 : state.clock.speed));
-  if (!state.clock.paused || params.get('walk') === '1') tickPlayer(state, dt);
+  if (!state.clock.paused || params.get('walk') === '1') { tickPlayer(state, dt); tickTasks(state, dt); }
   view.render(state, dt);
   if (panel) panel.update();
+  hud.update();
+  worldUi.update(dt);
   frames += 1;
   // tools/shot.mjs chờ cờ này trước khi chụp màn hình
   if (frames === 3) Promise.all([labReady, view.ready]).then(() => { window.__ready = true; });

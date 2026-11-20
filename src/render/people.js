@@ -9,6 +9,7 @@ import { hexToWorld, key } from '../sim/hex.js';
 import { topYAt, levelY } from './terrain.js';
 import { withFakeLight } from './fakelight.js';
 import { isNight } from '../sim/clock.js';
+import { debrisWorld } from '../sim/temple.js';
 
 const P = CONFIG.people;
 const S = CONFIG.terrainView.hexSize;
@@ -240,11 +241,17 @@ export function createPeopleView(state) {
         const hidden = night && home && !p.path && p.q === home.q && p.r === home.r;
         let h = facing.get(p.id) ?? (p.id * 1.7) % 6.28;
         if (w.heading !== null) { h = w.heading; facing.set(p.id, h); }
+        // Đang làm việc (dọn): quay mặt về món đồ, vung tay
+        const working = p.task && p.task.active;
+        if (working) {
+          const d = state.temple.debris.find((x) => x.id === p.task.id);
+          if (d) { const [tx, tz] = debrisWorld(d); h = Math.atan2(tx - w.x, tz - w.z); facing.set(p.id, h); }
+        }
         q.setFromAxisAngle(up, h);
         pos.set(w.x, w.y, w.z);
         scl.setScalar(hidden ? 0 : H);
         mesh.setMatrixAt(i, m.compose(pos, q, hidden ? zero : scl));
-        iAnim.setY(i, w.walking ? 1 : 0);
+        iAnim.setY(i, w.walking || working ? 1 : 0);
       });
       mesh.instanceMatrix.needsUpdate = true;
       iAnim.needsUpdate = true;

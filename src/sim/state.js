@@ -7,6 +7,7 @@ import { generateFlora } from './flora.js';
 import { generateVillage } from './village.js';
 import { createClock } from './clock.js';
 import { createPeople } from './people.js';
+import { createTempleState, createStats } from './temple.js';
 
 export const SAVE_VERSION = 1;
 
@@ -17,7 +18,9 @@ export function createState({ seed = 1 } = {}) {
     rngState: seedToRngState(seed),
     map: null,
     clock: createClock(),
-    temple: { condition: 0 }, // 0 = hoang tàn, 1 = đã sửa
+    temple: createTempleState(), // condition: 0 = hoang tàn, 1 = đã sửa; debris: đồ đổ nát chia 3 khu
+    stats: createStats(),        // tiền, pháp lực, uy tín
+    events: [],                  // sự kiện cho giao diện (đọc rồi xoá)
   };
   state.map = generateTerrain(state);
   state.map.landmarks = [];

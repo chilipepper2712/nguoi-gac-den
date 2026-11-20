@@ -121,12 +121,24 @@ export const CONFIG = {
     multiExponent: 1.3,     // bùa nhiều hình mạnh hơn cộng dồn
   },
   aura: {
-    minRadius: 2.2,       // bán kính vùng pháp lực khi đền hoang tàn (tạm, sau tính từ pháp lực)
-    maxRadius: 6.5,       // khi đền đã sửa
+    minRadius: 2.2,       // bán kính vùng pháp lực khi pháp lực = 0
+    maxRadius: 6.5,       // khi pháp lực ≥ fullPower
+    fullPower: 100,       // pháp lực để vùng bảo vệ nở tối đa (tạm)
+  },
+  economy: {
+    startMoney: 500,      // tiền thừa kế + tiền nghỉ việc lúc đầu (tạm)
+  },
+  cleanup: {
+    workSec: { default: 3, 'survival/structure': 5, 'survival/tree-log': 4, 'nature/log': 4, 'nature/grass': 2, 'nature/mushroom_tanGroup': 2 },
+    powerPerItem: 1,      // dọn một món
+    powerPerZone: 5,      // dọn sạch một khu
+    prestigePerZone: 2,
+    reach: 1,             // đứng cách món đồ tối đa n ô thì làm được
   },
   input: {
     tapMaxMove: 10,       // px: nhấc tay trong phạm vi này mới tính là chạm (không phải kéo)
     tapMaxMs: 350,
+    pickRadius: 36,       // px: chạm cách vật trong phạm vi này thì tính là chạm vào vật
   },
   camera: {
     fov: 30,              // FOV hẹp cho cảm giác gần isometric như ảnh tham khảo
