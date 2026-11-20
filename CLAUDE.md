@@ -2,6 +2,7 @@
 
 Demo game quản lý + nhập vai, chạy trên trình duyệt, 3D low-poly bằng Three.js.
 Thiết kế, quyết định đã chốt và câu hỏi còn mở: `docs/design.md`. **Đọc file đó trước khi làm gì liên quan gameplay.**
+Danh sách việc theo giai đoạn (ghi rõ việc nào cho model mạnh/nhẹ, việc nào đang chờ người dùng): `docs/tasks.md`. Làm xong việc nào thì chuyển nó lên mục "Đã xong".
 
 ## Chạy, test, kiểm hình
 
