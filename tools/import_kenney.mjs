@@ -15,6 +15,7 @@ import { flatten, clearNodeTransform } from '@gltf-transform/functions';
 import { PNG } from 'pngjs';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { CONFIG } from '../src/config.js';
 
 const NATURE = {
   leafsGreen: 0x9cc46a,
@@ -22,6 +23,7 @@ const NATURE = {
   leafsFall: 0xd9a35f,
   woodBark: 0x9b7f74,
   woodBarkDark: 0x8c7268,
+  woodDark: 0x7a5a48,
   woodInner: 0xd9c4a0,
   wood: 0xb08a6e,
   grass: 0x8fbb64,
@@ -38,20 +40,24 @@ const NATURE = {
   _defaultMat: 0xf4efe4,
 };
 
+// Màu khoá (render tìm đúng màu này để sơn lại theo từng nhà): khai báo trong src/config.js
+const { wall: WALL_KEY, accent: ACCENT_KEY } = CONFIG.colorKeys;
+
 // Mỗi bộ một bảng ô màu atlas: [hàng A, hàng B] × 16 cột → màu game
 const ATLAS = {
   survival: [
     [0x8fbb64, 0x6f9e5a, 0xc46a55, 0xb5654a, 0xd98f5c, 0xe3a46f, 0x7f8fa8, 0x6f7e98, 0x7f8fa8, 0x6f7e98, 0xb9c6d4, 0xa8b6c6, 0xa596bf, 0x8f80ab, 0x333333, 0x333333],
     [0x5d5650, 0x4f4945, 0xa39c92, 0x8f887e, 0xb5aea4, 0xc2bbb0, 0xefe6d2, 0xe6dcc8, 0xc9a582, 0xb08a6e, 0x9b7f74, 0x8c7268, 0xd9c4a0, 0xcdb38c, 0xefe6d2, 0xe6dcc8],
   ],
-  // Modular Buildings: tường vôi, mái ngói đất nung, kính → song gỗ tối, viền → gỗ
+  // Modular Buildings (đã kiểm từng khối): B15 = tường → WALL_KEY (sơn lại theo nhà) · A0/A1 = mái hiên vải → ACCENT_KEY
+  // A10/A11 = kính → xám xanh tối · B13 = mái bằng → bê tông xám nhạt · B9 = cửa gỗ → nâu · B1/B7 = máy lạnh → trắng xám
   modular: [
-    [0xd9a35f, 0xcf9550, 0xd9a35f, 0xcf9550, 0xd98f5c, 0xc97f4f, 0xb5654a, 0xa35a42, 0x5a4038, 0x4f3a33, 0x6b4f45, 0x5a4038, 0xa596bf, 0x8f80ab, 0x333333, 0x333333],
-    // B0/B1: mái (sample-house dùng B1 cho mái) · B8/B9: tường · B14/B15: viền, chân tường
-    [0xb5654a, 0xb5654a, 0xb5654a, 0xa35a42, 0xc2bbb0, 0xb5aea4, 0xf4efe4, 0xefe6d2, 0xefe6d2, 0xe8dcc2, 0x8a4a37, 0x7d5a4f, 0xb5654a, 0xa35a42, 0xe6dcc8, 0xcfc3aa],
+    [ACCENT_KEY, ACCENT_KEY, 0xd9a35f, 0xcf9550, 0xd98f5c, 0xc97f4f, 0xb5654a, 0xa35a42, 0x5d6872, 0x4f5a64, 0x5d6872, 0x4f5a64, 0xa596bf, 0x8f80ab, 0x333333, 0x333333],
+    [0xe8e4dc, 0xe8e4dc, 0xb5654a, 0xa35a42, 0xc2bbb0, 0xb5aea4, 0xf4efe4, 0xdcd8d0, 0x8a5a45, 0x7a4e3c, 0x8a4a37, 0x7d5a4f, 0xd6d0c4, 0xc9c2b5, 0xe6dcc8, WALL_KEY],
   ],
 };
 ATLAS.hexagon = ATLAS.survival; // chưa kiểm bảng ô của Hexagon Kit — kiểm trước khi dùng
+
 
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args.splice(i, 2)[1] : null; };

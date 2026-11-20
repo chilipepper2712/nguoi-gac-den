@@ -26,7 +26,10 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
 - `src/config.js` — mọi con số cân bằng và tham số hiển thị. Không rải số "ma thuật" trong logic.
 - `src/sim/hex.js` toán lục giác (axial, đỉnh nhọn, hướng d ↔ góc 60°·d). `src/sim/terrain.js` sinh bản đồ bậc + dốc, có luật đi lại (`canStep`).
 - `src/sim/clock.js` đồng hồ ngày đêm trong state. `src/sim/flora.js` vị trí cây/bụi/đá + cây cổ thụ (landmark).
-- `src/render/fakelight.js`: mọi vật liệu Lambert mới phải gắn `applyFakeLight(obj)` để nhận ánh đèn lồng ban đêm; chỉ mặt đất dùng `{ aura: true }`.
+- `src/render/fakelight.js`: mọi vật liệu Lambert mới phải gắn `applyFakeLight(obj)` (hoặc `withFakeLight(mat)`) để nhận ánh đèn ban đêm; chỉ mặt đất dùng `{ aura: true }`.
+  Đèn vẽ vào **bản đồ sáng** (texture nhìn từ trên xuống, chi phí cố định theo số đèn). Thêm đèn: `createLamps(tênNhóm)` trong `src/render/lamps.js` rồi `.set(points)`.
+- `src/sim/village.js` khu dân cư (nhà, đường nối về cổng đền, đèn đường; không đặt nhà ở chỗ thắt nút). `src/render/village.js` vẽ cả làng thành 1 mesh:
+  nhà mái bằng lắp từ khối Kenney Modular (tối đa 2 tầng, tường sơn lại theo `CONFIG.village.paints` qua màu khoá `CONFIG.colorKeys`), nhà mái ngói từ `src/render/props/house.js`.
 - `src/render/props/temple.js` đền + cổng theo `condition` (0 hoang tàn → 1 đã sửa). `src/ui/devpanel.js` là bảng thử tạm, không phải UI game.
 - Tham số URL xem nhanh: `?t=0.92` (giờ), `?temple=1`, `?pause=1`, `?dist=24` (cận cảnh), `?panel=0`, `?debug=1`.
 
@@ -43,9 +46,10 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
 ## Asset
 
 - **Dựng bằng code**: công trình có nhiều trạng thái (đền, nhà dân, công trình: hoang → dọn → sửa → nâng cấp), địa hình, người.
-- **Kenney (CC0)**: Nature Kit, Survival Kit (Hexagon Kit có nhưng chưa dùng: nhà kiểu Tây). Zip gốc không lưu trong repo — người dùng tự tải ở kenney.nl (trang chặn tải tự động, không lách).
-  Nhập: `node tools/import_kenney.mjs --kit nature|survival --src "<thư mục GLB đã giải nén>" --out assets/kenney/<kit> <tên model...>`.
-  Công cụ tô lại theo **bảng màu game** (bảng `NATURE` theo tên vật liệu, `ATLAS` theo ô màu của texture). Không dùng màu gốc Kenney (xanh ngọc, cam đậm lệch ảnh tham khảo).
+- **Kenney (CC0)**: Nature Kit, Survival Kit, Modular Buildings (chỉ dùng khối tường + mái bằng; không dùng nhà mẫu mái dốc, cửa sổ vòm). Hexagon Kit có nhưng chưa dùng. Zip gốc không lưu trong repo — người dùng tự tải ở kenney.nl (trang chặn tải tự động, không lách).
+  Nhập: `node tools/import_kenney.mjs --kit nature|survival|modular --src "<thư mục GLB đã giải nén>" --out assets/kenney/<kit> <tên model...>`.
+  Công cụ tô lại theo **bảng màu game** (bảng `NATURE` theo tên vật liệu, `ATLAS[kit]` theo ô màu của texture — mỗi bộ xếp ô khác nhau, kiểm ô từng khối dùng trước khi ánh xạ).
+  GLB do gltf-transform xuất có thuộc tính xếp xen kẽ: đọc đỉnh bằng `getX/getY/getZ`, không đọc thẳng `.array`. Không dùng màu gốc Kenney (xanh ngọc, cam đậm lệch ảnh tham khảo).
   Model cây cỏ khai báo trong `CONFIG.flora.models`; đồ đổ nát quanh đền trong `CONFIG.temple.ruinDebris`. Nạp bằng `src/render/models.js` (`loadGeometry`).
 - **AI (Higgsfield)**: đồ hữu cơ, đứng một mình, không cần trạng thái (cây đặc biệt, đá, đồ trang trí, con vật, hình ma). Quy trình rẻ nhất đã thử:
   1. Ảnh nguồn bằng `gpt_image_2_6` (0.25 credit). Prompt mẫu:

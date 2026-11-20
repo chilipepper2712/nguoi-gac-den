@@ -1,6 +1,8 @@
 // Mọi con số cân bằng và tham số hiển thị nằm ở đây. Chỉnh số thì sửa file này, không đụng logic.
 
 export const CONFIG = {
+  // Màu khoá trong model Kenney Modular (tools/import_kenney.mjs ghi vào), render sơn lại theo từng nhà
+  colorKeys: { wall: 0xfeeffe, accent: 0xd96f4a },
   terrain: {
     radius: 9,            // bán kính bản đồ (số vòng ô quanh tâm)
     noiseScale: 0.22,     // tần số nhiễu địa hình (nhỏ = đồi rộng, lớn = lởm chởm)
@@ -53,6 +55,35 @@ export const CONFIG = {
       ['nature/stump_old', 1.8, -0.5, 1.1], ['nature/log', -0.6, 1.9, 1.3], ['nature/grass', 0.4, 1.7, 0], ['nature/grass', -1.9, 0.4, 0.8],
       ['nature/plant_bushSmall', 1.9, 0.2, 0], ['nature/mushroom_tanGroup', -1.1, -1.2, 0],
     ],
+  },
+  village: {
+    houses: 10,           // số nhà lúc đầu (sau này tăng theo uy tín và vùng bảo vệ)
+    center: [0, 5],       // tâm khu dân cư (ngoài cổng đền, cùng hướng mặt tiền)
+    minDist: 3,           // không xây trong bán kính này quanh đền
+    maxDist: 7,
+    levelPenalty: 0.8,    // ưu tiên ô cùng bậc với sân đền
+    centerPull: 0.6,      // mức kéo nhà về phía tâm làng so với ưu tiên đường nối ngắn
+    flatRoofShare: 0.6,   // tỉ lệ nhà mái bằng
+    twoFloorShare: 0.45,  // trong nhà mái bằng: tỉ lệ 2 tầng (tối đa 2)
+    wideShare: 0.3,       // trong nhà mái bằng: tỉ lệ nhà rộng 2 gian
+    thatchShare: 0.2,     // trong nhà mái ngói: tỉ lệ còn mái rơm
+    shopShare: 0.4,       // tỉ lệ nhà có bảng hiệu
+    lampEvery: 2,         // đèn đường mỗi n ô đường
+    signs: ['Tạp hoá', 'Cà phê', 'Sửa xe', 'Cơm bình dân', 'Hớt tóc', 'Bánh mì', 'Thuốc lá', 'Bún bò'],
+    paints: [0xf2d98a, 0xbcd9e0, 0xf0c4b8, 0xcfe3c0, 0xf4efe4, 0xe8cfa0], // màu sơn tường nhà mái bằng
+    accents: [0x6fa86a, 0xd96f4a, 0x6f8fb8, 0xe0b04a],                    // màu mái hiên, cửa cuốn
+    flatScale: 0.6,       // 1 gian Modular (1×0.63×1) thu về kích thước bản đồ
+    tileScale: 0.8,       // nhà mái ngói dựng bằng code
+    setback: 0.25,        // lùi nhà về sau tâm ô, chừa sân trước
+  },
+  // Model dùng cho khu dân cư (assets/kenney/<đường dẫn>.glb)
+  villageModels: {
+    cells: ['modular/building-block', 'modular/building-door', 'modular/building-window', 'modular/building-windows',
+      'modular/building-door-window', 'modular/building-window-awnings', 'modular/building-window-balcony'],
+    roof: ['modular/roof-flat-top'],
+    extras: ['modular/detail-ac-a', 'modular/door-brown'],
+    garden: ['nature/fence_simpleLow', 'nature/path_stone', 'nature/pot_large', 'nature/pot_small', 'nature/flower_purpleA',
+      'nature/flower_redA', 'nature/flower_yellowA', 'nature/crops_leafsStageB', 'nature/plant_flatShort', 'nature/plant_bushSmall'],
   },
   aura: {
     minRadius: 2.2,       // bán kính vùng pháp lực khi đền hoang tàn (tạm, sau tính từ pháp lực)

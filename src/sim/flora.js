@@ -10,6 +10,7 @@
 import { CONFIG } from '../config.js';
 import { distance } from './hex.js';
 import { nextRandom } from './rng.js';
+import { villageTiles } from './village.js';
 
 const F = CONFIG.flora;
 const count = (kind) => F.models[kind].length;
@@ -31,8 +32,9 @@ function smoothNoise(seed, x, y) {
 }
 
 // Các ô dành sẵn, không rải cây: sân đền + vòng quanh, ô dốc, ô cây cổ thụ.
-function reserved(map, t) {
+function reserved(map, t, taken) {
   if (distance(t.q, t.r, 0, 0) <= F.clearRadius) return true;
+  if (taken.has(`${t.q},${t.r}`)) return true;
   if (t.ramp !== null) return true;
   return map.landmarks.some((l) => l.q === t.q && l.r === t.r);
 }
@@ -55,9 +57,10 @@ export function generateFlora(state) {
     });
   };
 
+  const taken = villageTiles(map);
   const tiles = Object.values(map.tiles).sort((a, b) => a.q - b.q || a.r - b.r);
   for (const t of tiles) {
-    if (t.type === 'water' || reserved(map, t)) continue;
+    if (t.type === 'water' || reserved(map, t, taken)) continue;
 
     if (t.type === 'rock') {
       for (const [dx, dz] of spots(1 + Math.floor(rnd() * 2))) {

@@ -6,6 +6,7 @@ import { CONFIG } from '../config.js';
 import { hexToWorld, key, worldToHex } from '../sim/hex.js';
 import { buildTerrainMesh, levelY } from './terrain.js';
 import { buildFlora, buildRuinDebris } from './flora.js';
+import { buildVillage } from './village.js';
 import { buildStairs } from './stairs.js';
 import { buildTemple, buildGate } from './props/temple.js';
 import { buildGhost } from './ghost.js';
@@ -70,8 +71,10 @@ export function createView(container, state) {
   }).catch((e) => console.warn('Thiếu đồ đổ nát', e));
 
   // Đền + cổng: dựng lại khi trạng thái đổi
-  const lamps = createLamps();
+  const lamps = createLamps('temple');
   scene.add(lamps.object);
+  const village = buildVillage(state.map);
+  scene.add(village.object);
   let templeGroup = null;
   let builtCondition = -1;
   function rebuildTemple(condition) {
@@ -129,7 +132,7 @@ export function createView(container, state) {
 
   const view = {
     renderer, scene, camera, controls, lights: { hemi, sun }, render, resize, onFrame: null, night: 0,
-    ready: Promise.all([flora.ready, debrisReady]),
+    ready: Promise.all([flora.ready, debrisReady, village.ready]),
   };
 
   function render(st, dt) {
@@ -142,6 +145,7 @@ export function createView(container, state) {
     auraNow = auraNow < 0 ? auraTarget : THREE.MathUtils.damp(auraNow, auraTarget, 2, dt);
     fakeLightUniforms.uAuraRadius.value = auraNow;
     lamps.update(s.night);
+    village.update(s.night);
     for (const g of ghosts) {
       g.angle += dt * 0.05;
       const r = auraNow + g.extra;

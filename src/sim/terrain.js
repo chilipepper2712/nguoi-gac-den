@@ -170,8 +170,10 @@ function limitCliffs(tiles) {
 function placeRamps(map, state) {
   const tiles = Object.values(map.tiles);
   const candidates = [];
+  // Ô dành cho công trình cố định (cây cổ thụ, cổng đền) không được thành dốc
+  const fixed = new Set([key(...CONFIG.flora.heroTree), key(...CONFIG.temple.gateHex)]);
   for (const t of tiles) {
-    if (t.type === 'water' || t.type === 'templeGround') continue;
+    if (t.type === 'water' || t.type === 'templeGround' || fixed.has(key(t.q, t.r))) continue;
     for (let d = 0; d < 6; d++) {
       const up = map.tiles[key(...neighbor(t.q, t.r, d))];
       const down = map.tiles[key(...neighbor(t.q, t.r, opposite(d)))];

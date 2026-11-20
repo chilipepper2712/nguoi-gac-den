@@ -30,6 +30,9 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - **Phạm vi demo** ~20–30 phút: intro → về đền → dọn 3 khu → sửa 1, xây 1 công trình → thuê 1 người → 3–5 ngày đêm, ma tăng dần → 1 minigame → kết thúc ở lễ hội đầu tiên.
 - **Intro**: truyện tranh dựng bằng cảnh 3D trong game, bỏ qua được; dùng lại cho cảnh cắt sự kiện. Hướng dẫn chơi diễn ra ở đền.
 - **UI**: thiết kế cho màn hình dọc trước; ngang dùng cùng HUD sắp xếp lại.
+- **Làng**: làng quê thời nay — nhà mái bằng (tối đa 2 tầng, tường sơn màu, khối Kenney Modular) xen nhà mái ngói (dựng bằng code); sân trước có lối đá, hàng rào, hoa, rau; biển hiệu quán xá; đèn hiên, đèn cửa, đèn đường; đường đi bộ nối về cổng đền.
+- **Đuổi ma = vẽ bùa**: người chơi dùng ngón tay đồ theo hình trên một tờ giấy vàng, nét đỏ. Bùa yếu 1 hình, bùa mạnh 3 hình (thứ tự ngẫu nhiên). Hình mới mở khoá theo mức pháp lực.
+- **Vật phẩm**: chuông, đèn lồng… dùng được; tránh biểu tượng tôn giáo.
 - Tone: **ấm áp, hài** là nền; ban đêm không khí đáng sợ (tối, lạnh, sương) nhưng **ma dễ thương**.
 - Asset: hybrid. Code dựng công trình nhiều trạng thái, địa hình, cây thường (vài dáng đơn giản rải theo cụm). AI (Higgsfield) cho đồ hữu cơ nổi bật.
   Cây cổ thụ cạnh đền: dáng cây đa, **bỏ rễ thả từ tán** (Hunyuan LowPoly, `assets/props/hero_tree.glb`).
@@ -71,13 +74,14 @@ Kết luận: SAM + chuyển đổi là mặc định cho đồ hữu cơ; Hunyu
 
 ## Câu hỏi còn mở
 
-1. "Đánh ma" trên điện thoại trông thế nào (chạm liên tục, kéo/vạch theo hình, ngắm và thả, hay chọn theo lượt)?
-2. Vật phẩm làm phép là gì (hình dáng, tên)? Ai làm phép — người hành lễ được thuê? Có giới hạn số lần dùng không?
-3. Nhà dân: dựng bằng code cùng ngôn ngữ với đền (đề xuất) hay dùng Kenney Modular Buildings (nhà kiểu châu Âu)? Ảnh so sánh: `?lab=props&code=houses&glb=modular/...` (file Modular ở `assets/_lab/`).
+1. Hình vẽ trên bùa: tự chế (khuyến nghị — đơn giản để đồ bằng ngón tay, không lấy chữ Hán / mẫu phù chú có thật) hay chép mẫu bùa thật? Gọi là "bùa" hay tên khác?
+2. Người chơi tự vẽ bùa → nhân vật không còn chỉ là người trông coi. Chấp nhận thành cốt truyện "người trông coi dần thành người gác đền" (sức mạnh đến từ pháp lực của đền), hay giữ nguyên vai?
+3. Vẽ hỏng thì sao (mất tờ bùa, ma hồi máu, ma chạy)? Có giới hạn thời gian không? Giấy/mực lấy ở đâu (đền cấp theo pháp lực, hay mua ở chợ làng)?
 
 ## Rủi ro thiết kế đã nêu
 
 - **Vòng lặp dương**: đền đẹp → đông khách → pháp lực mạnh → ít ma → đông khách hơn. Chiều ngược lại: đền tàn → ma nhiều → khách sợ → đền tàn mãi. Dễ thành lăn cầu tuyết (qua ngưỡng là hết thử thách) hoặc vòng xoáy chết (đầu game kẹt). Cần lực kéo ngược.
 - **Ban đêm**: đã có hành động chính (việc trông coi + cứu người bằng vật phẩm làm phép). Còn phải định nghĩa thao tác "đánh ma" trên điện thoại.
 - **Trùng game khác**: mở đầu gần y hệt Stardew Valley (bỏ việc văn phòng, nhận thừa kế ở quê); phần quản lý gần Graveyard Keeper; "niềm tin từ dân làm tài nguyên" gần Godus (bị chê vì vòng thu thập lặp lại nhàm).
+- **Bùa giấy vàng nét đỏ** là hình ảnh gắn chặt với phù chú Đạo giáo / tín ngưỡng dân gian; cơ chế "vẽ bùa trừ ma" chính là hình mẫu mà quy định VN gọi là mê tín dị đoan. Giảm rủi ro: hình vẽ tự chế, không chữ Hán, không bát quái/âm dương; cân nhắc đổi tên gọi.
 - **Pháp lý VN**: quy định nội dung số có cấm tuyên truyền mê tín dị đoan; cơ chế "viếng nhiều thì trừ được ma" nằm gần vùng xám. Giảm rủi ro bằng thế giới hư cấu rõ ràng, không gắn quyên góp với tiền thật. Nếu phát hành ở VN cần hỏi người làm cấp phép.
