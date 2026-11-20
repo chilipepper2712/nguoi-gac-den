@@ -30,7 +30,10 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - **Phạm vi demo** ~20–30 phút: intro → về đền → dọn 3 khu → sửa 1, xây 1 công trình → thuê 1 người → 3–5 ngày đêm, ma tăng dần → 1 minigame → kết thúc ở lễ hội đầu tiên.
 - **Intro**: truyện tranh dựng bằng cảnh 3D trong game, bỏ qua được; dùng lại cho cảnh cắt sự kiện. Hướng dẫn chơi diễn ra ở đền.
 - **UI**: thiết kế cho màn hình dọc trước; ngang dùng cùng HUD sắp xếp lại.
-- **Làng**: làng quê thời nay — nhà mái bằng (tối đa 2 tầng, tường sơn màu, khối Kenney Modular) xen nhà mái ngói (dựng bằng code); sân trước có lối đá, hàng rào, hoa, rau; biển hiệu quán xá; đèn hiên, đèn cửa, đèn đường; đường đi bộ nối về cổng đền.
+- **Làng**: quy hoạch kiểu Godus — nhà khối vuông là chính (chữ nhật ít hơn, có kiểu ghép so le), tường kem, mái ngói thấp xen mái bằng (tối đa 2 tầng), ít mái rơm; lõi làng dày (2–3 nhà một ô), rìa thưa; không phải nhà nào cũng có vườn; đèn hiên, đèn đường, đường đất nối về cổng đền.
+- **Biển hiệu**: tiếng Anh chung chung (GROCERY, COFFEE, REPAIR…) để tránh bị bắt bẻ; một biển **BRAVO6** chữ trắng nền đen (thương hiệu của tác giả) ở cửa hàng gần cổng đền nhất.
+- **Tỉ lệ**: căn theo người (cao 0.26); đền + cổng thu 0.75; cửa nhà cao ≈ người (người chibi đầu to).
+- **Nhân vật**: người khối chibi 3D dựng bằng code (đầu to, mắt chấm, má hồng, tóc/nón lá/mũ), vẽ hàng loạt; nhân vật chính áo sơ mi trắng, cà vạt đỏ. Dân đi lại ban ngày (viếng đền, sang nhà nhau), đêm về nhà.
 - **Đuổi ma = vẽ bùa**: người chơi dùng ngón tay đồ theo hình trên một tờ giấy vàng, nét đỏ. Bùa yếu 1 hình, bùa mạnh 3 hình (thứ tự ngẫu nhiên). Hình mới mở khoá theo mức pháp lực.
 - **Vật phẩm**: chuông, đèn lồng… dùng được; tránh biểu tượng tôn giáo.
 - Tone: **ấm áp, hài** là nền; ban đêm không khí đáng sợ (tối, lạnh, sương) nhưng **ma dễ thương**.
@@ -73,6 +76,8 @@ Cùng một ảnh nguồn (gpt_image_2_6, 0.25 credit), so trên địa hình th
 Kết luận: SAM + chuyển đổi là mặc định cho đồ hữu cơ; Hunyuan cho vài asset nổi bật. Code vẫn làm công trình nhiều trạng thái.
 
 ## Câu hỏi còn mở
+
+0. Bản đồ có cần là đảo giữa nước không, hay là thung lũng trong đất liền (rìa là đồi rừng tan vào sương), hay mảnh đất lơ lửng kiểu diorama?
 
 1. Hình vẽ trên bùa: tự chế (khuyến nghị — đơn giản để đồ bằng ngón tay, không lấy chữ Hán / mẫu phù chú có thật) hay chép mẫu bùa thật? Gọi là "bùa" hay tên khác?
 2. Người chơi tự vẽ bùa → nhân vật không còn chỉ là người trông coi. Chấp nhận thành cốt truyện "người trông coi dần thành người gác đền" (sức mạnh đến từ pháp lực của đền), hay giữ nguyên vai?

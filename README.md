@@ -38,6 +38,6 @@ docs/design.md      thiết kế, quyết định, câu hỏi mở
 
 ## Credit
 
-- Cây, đá, cỏ hoa, đồ đổ nát, khối nhà mái bằng: [Kenney](https://www.kenney.nl) Nature Kit, Survival Kit, Modular Buildings — CC0 (`assets/kenney/LICENSE-*.txt`), đã tô lại theo bảng màu game bằng `tools/import_kenney.mjs`.
+- Cây, đá, cỏ hoa, đồ đổ nát: [Kenney](https://www.kenney.nl) Nature Kit, Survival Kit — CC0 (`assets/kenney/LICENSE-*.txt`), đã tô lại theo bảng màu game bằng `tools/import_kenney.mjs`.
 - [three.js](https://threejs.org) r187 — MIT, xem `vendor/three/LICENSE`.
 - `assets/props/hero_tree.glb`: sinh bằng AI (Higgsfield, Hunyuan3D) theo yêu cầu của tác giả game, đã chuyển về low-poly màu phẳng bằng `tools/flatten_glb.mjs`.

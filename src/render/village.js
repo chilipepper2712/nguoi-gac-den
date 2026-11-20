@@ -9,14 +9,13 @@ import { hexToWorld, key, neighbor, distance } from '../sim/hex.js';
 import { canStep } from '../sim/terrain.js';
 import { levelY } from './terrain.js';
 import { loadGeometry } from './models.js';
-import { buildHouseGeometry } from './props/house.js';
+import { buildBlockHouse } from './props/blockhouse.js';
 import { colored, limb } from './props/geo.js';
 import { withFakeLight } from './fakelight.js';
 import { createLamps } from './lamps.js';
 
 const V = CONFIG.village;
 const S = CONFIG.terrainView.hexSize;
-const CELL_H = 0.63; // chiều cao một tầng Modular
 const PATH_COLOR = 0xd9c9a6;
 const POST_COLOR = 0x5d5650;
 const BOARD_COLOR = 0x6b4f45;
@@ -53,26 +52,29 @@ function prep(geo, repaint) {
   return g;
 }
 
-function signAtlas(texts) {
+// Atlas chữ biển hiệu: mỗi dòng một biển; dòng cuối là biển thương hiệu (chữ trắng nền đen)
+function signAtlas(texts, brand) {
+  const all = [...texts, brand];
   const c = document.createElement('canvas');
   c.width = 256;
-  c.height = 64 * texts.length;
+  c.height = 64 * all.length;
   const g = c.getContext('2d');
-  texts.forEach((t, i) => {
-    g.fillStyle = ['#f4efe4', '#f2d98a', '#bcd9e0', '#f0c4b8'][i % 4];
+  all.forEach((t, i) => {
+    const isBrand = i === all.length - 1;
+    g.fillStyle = isBrand ? '#111111' : ['#f4efe4', '#f2d98a', '#bcd9e0', '#f0c4b8'][i % 4];
     g.fillRect(0, i * 64, 256, 64);
-    g.strokeStyle = '#6b4f45';
-    g.lineWidth = 6;
-    g.strokeRect(3, i * 64 + 3, 250, 58);
-    g.fillStyle = '#7a2e22';
-    g.font = 'bold 34px system-ui, sans-serif';
+    g.strokeStyle = isBrand ? '#f4f4f4' : '#6b4f45';
+    g.lineWidth = isBrand ? 4 : 6;
+    g.strokeRect(4, i * 64 + 4, 248, 56);
+    g.fillStyle = isBrand ? '#ffffff' : '#7a2e22';
+    g.font = `bold ${isBrand ? 38 : 34}px system-ui, sans-serif`;
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.fillText(t, 128, i * 64 + 34, 236);
+    g.fillText(t, 128, i * 64 + 34, 232);
   });
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
+  return { tex, rows: all.length };
 }
 
 export function buildVillage(map) {
@@ -83,7 +85,7 @@ export function buildVillage(map) {
   group.add(houseLamps.object, streetLamps.object);
 
   const M = CONFIG.villageModels;
-  const all = [...M.cells, ...M.roof, ...M.extras, ...M.garden];
+  const all = Object.values(M).flat();
   const ready = Promise.all(all.map((p) => loadGeometry(p).then((g) => [p, g]))).then((pairs) => {
     const G = Object.fromEntries(pairs);
     const parts = [];
@@ -91,12 +93,16 @@ export function buildVillage(map) {
     const houseLampPts = [];
     const streetLampPts = [];
     const v = map.village;
-    const wallKey = new THREE.Color(CONFIG.colorKeys.wall);
-    const accentKey = new THREE.Color(CONFIG.colorKeys.accent);
     const m = new THREE.Matrix4();
     const tmp = new THREE.Matrix4();
     const q = new THREE.Quaternion();
 
+    // Vị trí nhà trong ô theo số nhà trên ô (kiểu Godus: ô lõi làng chứa 2–3 nhà nhỏ sát nhau)
+    const SLOTS = {
+      1: [[0, -V.setback]],
+      2: [[-0.4, -0.08], [0.4, -0.08]],
+      3: [[-0.4, 0.14], [0.4, 0.14], [0, -0.46]],
+    };
     for (const h of v.houses) {
       const tile = map.tiles[key(h.q, h.r)];
       const [cx, cz] = hexToWorld(h.q, h.r, S);
@@ -110,61 +116,44 @@ export function buildVillage(map) {
         m.multiplyMatrices(base, tmp);
         parts.push(prep(geo, repaint).applyMatrix4(m));
       };
-      const zHouse = -V.setback;
-      let doorX = 0;
-      let frontZ;
+      const [hx, hz] = SLOTS[h.count][h.slot];
+      const shrink = h.count > 1 ? V.smallHouseScale : 1;
+      const sc = V.houseScale * shrink;
+      const house = buildBlockHouse({ shape: h.shape, floors: h.floors, roof: h.roof, wall: V.walls[h.wall], seed: h.q * 31 + h.r * 7 + h.slot });
+      put(house.geometry, hx, 0, hz, 0, sc);
+      const doorX = hx + house.door[0] * sc;
+      const frontZ = hz + house.door[1] * sc;
+      const lampAt = [hx + house.lamp[0] * sc, house.lamp[1] * sc, hz + house.lamp[2] * sc];
+      // Đèn hiên: không phải nhà nào cũng bật
+      if ((h.wall + h.slot) % 3 !== 0) houseLampPts.push(world(...lampAt));
 
-      if (h.style === 'flat') {
-        const s = V.flatScale;
-        const xs = h.wide ? [-0.5, 0.5] : [0];
-        const repaint = [[wallKey, new THREE.Color(V.paints[h.paint])], [accentKey, new THREE.Color(V.accents[h.accent])]];
-        const shop = h.sign !== null;
-        doorX = xs[0] * s;
-        for (let f = 0; f < h.floors; f++) {
-          xs.forEach((x, i) => {
-            let piece;
-            if (f === 0) piece = i === 0 ? 'modular/building-door' : shop ? 'modular/building-window-awnings' : 'modular/building-window';
-            else piece = (h.paint + i) % 2 ? 'modular/building-window-balcony' : 'modular/building-windows';
-            put(G[piece], x * s, f * CELL_H * s, zHouse, 0, s, s, s, repaint);
-          });
+      // Sân trước theo loại: vườn đầy đủ / chỉ chậu cây và lối đá / trống
+      if (h.yard === 'garden' || h.yard === 'pot') {
+        for (const z of [frontZ + 0.14, frontZ + 0.36]) put(G['nature/path_stone'], doorX, 0, z, Math.PI / 2, 0.3);
+        put(G['nature/pot_small'], doorX - 0.2, 0, frontZ + 0.08, 0, 0.6);
+      }
+      if (h.yard === 'garden') {
+        for (const x of [-0.5, -0.24, 0.24, 0.5]) {
+          if (Math.abs(x - doorX) < 0.2) continue;
+          put(G['nature/fence_simpleLow'], x, 0, 0.68, 0, 0.26);
         }
-        put(G['modular/door-brown'], doorX, 0, zHouse + 0.47 * s, 0, s);
-        put(G['modular/roof-flat-top'], 0, h.floors * CELL_H * s, zHouse, 0, s * xs.length * 0.95, s, s, repaint);
-        if (h.paint % 2 === 0) put(G['modular/detail-ac-a'], 0.22 * s, h.floors * CELL_H * s + 0.02, zHouse - 0.25 * s, 0, s * 1.2);
-        frontZ = zHouse + 0.5 * s;
-        houseLampPts.push(world(doorX + 0.2 * s, 0.48 * s, frontZ + 0.04));
-      } else {
-        const ts = V.tileScale;
-        const geo = buildHouseGeometry({ variant: h.variant, level: h.level, seed: h.q * 31 + h.r });
-        put(geo, 0, 0, zHouse, 0, ts);
-        doorX = (h.variant === 1 ? -0.25 : 0) * ts;
-        frontZ = zHouse + [0.325, 0.35, 0.4][h.variant] * ts;
-        houseLampPts.push(world(doorX + 0.17 * ts, 0.42 * ts, frontZ + 0.03));
-      }
-
-      // Sân trước: lối đá, hàng rào thấp, chậu cây, hoa, rau
-      const pathS = 0.3;
-      for (const z of [frontZ + 0.14, frontZ + 0.36, 0.66]) put(G['nature/path_stone'], doorX, 0, z, Math.PI / 2, pathS);
-      for (const x of [-0.5, -0.24, 0.24, 0.5]) {
-        if (Math.abs(x - doorX) < 0.2) continue;
-        put(G['nature/fence_simpleLow'], x, 0, 0.68, 0, 0.26);
-      }
-      put(G['nature/pot_small'], doorX - 0.2, 0, frontZ + 0.08, 0, 0.6);
-      const side = doorX > 0 ? -1 : 1;
-      if ((h.q + h.r) % 2 === 0) {
-        for (const [dx, dz] of [[0, 0], [0.16, 0], [0, 0.16], [0.16, 0.16]]) put(G['nature/crops_leafsStageB'], side * (0.3 + dx), 0, frontZ + 0.12 + dz, 0, 0.35);
-      } else {
-        for (const [dx, dz, f] of [[0, 0.1, 'nature/flower_redA'], [0.14, 0.2, 'nature/flower_yellowA'], [0.26, 0.08, 'nature/flower_purpleA'], [0.08, 0.32, 'nature/plant_flatShort']]) {
-          put(G[f], side * (0.28 + dx), 0, frontZ + dz, 0, 0.7);
+        const side = doorX > 0 ? -1 : 1;
+        if ((h.q + h.r) % 2 === 0) {
+          for (const [dx, dz] of [[0, 0], [0.16, 0], [0, 0.16], [0.16, 0.16]]) put(G['nature/crops_leafsStageB'], side * (0.3 + dx), 0, frontZ + 0.12 + dz, 0, 0.35);
+        } else {
+          for (const [dx, dz, f] of [[0, 0.1, 'nature/flower_redA'], [0.14, 0.2, 'nature/flower_yellowA'], [0.26, 0.08, 'nature/flower_purpleA'], [0.08, 0.32, 'nature/plant_flatShort']]) {
+            put(G[f], side * (0.28 + dx), 0, frontZ + dz, 0, 0.7);
+          }
         }
       }
 
-      // Biển hiệu ở góc sân
+      // Biển hiệu: trước nhà, lệch sang bên cạnh cửa
       if (h.sign !== null) {
-        const sx = -side * 0.42;
-        for (const dx of [-0.17, 0.17]) parts.push(prep(colored(limb(world(sx + dx, 0, 0.5), world(sx + dx, 0.42, 0.5), 0.015, 0.015, 4), POST_COLOR)));
-        put(colored(new THREE.BoxGeometry(0.42, 0.15, 0.03), BOARD_COLOR), sx, 0.34, 0.5);
-        signQuads.push({ m: new THREE.Matrix4().multiplyMatrices(base, new THREE.Matrix4().makeTranslation(sx, 0.34, 0.517)), index: h.sign });
+        const sx = doorX + (doorX <= hx ? 0.3 : -0.3) * shrink;
+        const sz = frontZ + 0.16;
+        for (const dx of [-0.17, 0.17]) parts.push(prep(colored(limb(world(sx + dx * shrink, 0, sz), world(sx + dx * shrink, 0.42 * shrink, sz), 0.015, 0.015, 4), POST_COLOR)));
+        put(colored(new THREE.BoxGeometry(0.42, 0.15, 0.03), BOARD_COLOR), sx, 0.34 * shrink, sz, 0, shrink);
+        signQuads.push({ m: new THREE.Matrix4().multiplyMatrices(base, new THREE.Matrix4().compose(new THREE.Vector3(sx, 0.34 * shrink, sz + 0.017 * shrink), new THREE.Quaternion(), new THREE.Vector3(shrink, shrink, shrink))), index: h.sign });
       }
     }
 
@@ -257,7 +246,8 @@ export function buildVillage(map) {
     if (signQuads.length) {
       const pos = [];
       const uv = [];
-      const n = V.signs.length;
+      const atlas = signAtlas(V.signs, V.brandSign);
+      const n = atlas.rows;
       for (const { m: sm, index } of signQuads) {
         const w = 0.19;
         const hh = 0.065;
@@ -270,7 +260,7 @@ export function buildVillage(map) {
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
       g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
       g.computeVertexNormals();
-      const signs = new THREE.Mesh(g, withFakeLight(new THREE.MeshLambertMaterial({ map: signAtlas(V.signs) })));
+      const signs = new THREE.Mesh(g, withFakeLight(new THREE.MeshLambertMaterial({ map: atlas.tex })));
       signs.name = 'village-signs';
       group.add(signs);
     }

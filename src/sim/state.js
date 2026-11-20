@@ -6,6 +6,7 @@ import { generateTerrain } from './terrain.js';
 import { generateFlora } from './flora.js';
 import { generateVillage } from './village.js';
 import { createClock } from './clock.js';
+import { createPeople } from './people.js';
 
 export const SAVE_VERSION = 1;
 
@@ -22,6 +23,7 @@ export function createState({ seed = 1 } = {}) {
   state.map.landmarks = [];
   generateVillage(state);
   generateFlora(state);
+  createPeople(state);
   return state;
 }
 

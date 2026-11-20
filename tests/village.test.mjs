@@ -12,11 +12,11 @@ test('làng tất định theo seed', () => {
   assert.deepEqual(createState({ seed: 6 }).map.village, createState({ seed: 6 }).map.village);
 });
 
-test('đủ số nhà, nhà trên ô đất phẳng, ngoài sân đền, không trên đường', () => {
+test('đủ số ô nhà, nhà trên ô đất phẳng, ngoài sân đền, không trên đường', () => {
   for (const seed of SEEDS) {
     const { map } = createState({ seed });
     const v = map.village;
-    assert.equal(v.houses.length, CONFIG.village.houses, `seed ${seed}`);
+    assert.equal(new Set(v.houses.map((h) => key(h.q, h.r))).size, CONFIG.village.houseTiles, `seed ${seed}`);
     const roads = new Set(v.roads.map((r) => key(r.q, r.r)));
     const seen = new Set();
     for (const h of v.houses) {
@@ -25,8 +25,13 @@ test('đủ số nhà, nhà trên ô đất phẳng, ngoài sân đền, không 
       assert.equal(t.ramp, null);
       assert.ok(distance(h.q, h.r, 0, 0) >= CONFIG.village.minDist);
       assert.ok(!roads.has(key(h.q, h.r)), 'nhà nằm trên đường');
-      assert.ok(!seen.has(key(h.q, h.r)), 'hai nhà cùng ô');
-      seen.add(key(h.q, h.r));
+      const ks = `${key(h.q, h.r)}#${h.slot}`;
+      assert.ok(!seen.has(ks), 'hai nhà cùng ô cùng chỗ');
+      seen.add(ks);
+      assert.ok(h.slot < h.count && h.count <= 3);
+      const mates = v.houses.filter((o) => o.q === h.q && o.r === h.r);
+      assert.equal(mates.length, h.count);
+      assert.ok(mates.every((o) => o.facing === h.facing), 'nhà chung ô phải chung hướng');
     }
   }
 });

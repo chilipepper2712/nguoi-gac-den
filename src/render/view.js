@@ -7,6 +7,7 @@ import { hexToWorld, key, worldToHex } from '../sim/hex.js';
 import { buildTerrainMesh, levelY } from './terrain.js';
 import { buildFlora, buildRuinDebris } from './flora.js';
 import { buildVillage } from './village.js';
+import { createPeopleView } from './people.js';
 import { buildStairs } from './stairs.js';
 import { buildTemple, buildGate } from './props/temple.js';
 import { buildGhost } from './ghost.js';
@@ -75,6 +76,9 @@ export function createView(container, state) {
   scene.add(lamps.object);
   const village = buildVillage(state.map);
   scene.add(village.object);
+  const people = createPeopleView(state);
+  scene.add(people.object);
+  let elapsed = 0;
   let templeGroup = null;
   let builtCondition = -1;
   function rebuildTemple(condition) {
@@ -85,11 +89,13 @@ export function createView(container, state) {
     const temple = buildTemple({ condition });
     temple.position.set(0, centerY, 0);
     temple.rotation.y = rot;
+    temple.scale.setScalar(CONFIG.temple.scale);
     const [gq, gr] = CONFIG.temple.gateHex;
     const [gx, gz] = hexToWorld(gq, gr, S);
     const gate = buildGate({ condition });
     gate.position.set(gx, levelY(state.map.tiles[key(gq, gr)].h), gz);
     gate.rotation.y = rot;
+    gate.scale.setScalar(CONFIG.temple.scale);
     templeGroup.add(temple, gate);
     applyFakeLight(templeGroup);
     scene.add(templeGroup);
@@ -146,6 +152,8 @@ export function createView(container, state) {
     fakeLightUniforms.uAuraRadius.value = auraNow;
     lamps.update(s.night);
     village.update(s.night);
+    elapsed += dt;
+    people.update(dt, elapsed);
     for (const g of ghosts) {
       g.angle += dt * 0.05;
       const r = auraNow + g.extra;

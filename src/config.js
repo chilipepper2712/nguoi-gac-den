@@ -18,7 +18,7 @@ export const CONFIG = {
   flora: {
     clearRadius: 2,       // không rải cây trong bán kính này quanh đền (sân + vòng quanh)
     heroTree: [-1, -1],   // ô của cây cổ thụ cạnh đền (phía sau-trái khi nhìn từ camera mặc định)
-    heroTreeHeight: 2.6,  // chiều cao cây cổ thụ (đơn vị thế giới)
+    heroTreeHeight: 2.2,  // chiều cao cây cổ thụ (đơn vị thế giới)
     heroTreeRotation: 0.6,
     spotRadius: 0.42,     // khoảng lệch khỏi tâm ô khi một ô có nhiều cây
     forestScale: 0.35,    // tần số nhiễu gom cây thành cụm rừng
@@ -47,6 +47,7 @@ export const CONFIG = {
   },
   temple: {
     rotation: Math.PI / 6, // mặt tiền đền hướng theo hướng lục giác 1 (gần hướng camera mặc định)
+    scale: 0.75,           // tỉ lệ đền + cổng (căn theo chiều cao người)
     gateHex: [0, 2],       // ô đặt cổng, cùng hướng mặt tiền
     // Đồ đổ nát quanh đền khi còn hoang (toạ độ cục bộ của đền, mặt tiền +z). Sẽ thành việc dọn dẹp trong gameplay.
     ruinDebris: [
@@ -57,33 +58,49 @@ export const CONFIG = {
     ],
   },
   village: {
-    houses: 10,           // số nhà lúc đầu (sau này tăng theo uy tín và vùng bảo vệ)
+    houseTiles: 9,        // số ô đất có nhà lúc đầu (sau này tăng theo uy tín và vùng bảo vệ)
+    coreShare: 0.5,       // tỉ lệ ô mọc trước (gần đền nhất) là lõi làng: 2–3 nhà nhỏ một ô
+    tripleShare: 0.35,    // lõi làng: tỉ lệ ô 3 nhà (còn lại 2 nhà)
+    edgePairShare: 0.25,  // rìa làng: tỉ lệ ô 2 nhà (còn lại 1 nhà)
+    gardenShare: 0.4,     // nhà đứng riêng một ô: tỉ lệ có vườn (còn lại chỉ chậu cây hoặc trống)
     center: [0, 5],       // tâm khu dân cư (ngoài cổng đền, cùng hướng mặt tiền)
     minDist: 3,           // không xây trong bán kính này quanh đền
     maxDist: 7,
     levelPenalty: 0.8,    // ưu tiên ô cùng bậc với sân đền
     centerPull: 0.6,      // mức kéo nhà về phía tâm làng so với ưu tiên đường nối ngắn
-    flatRoofShare: 0.6,   // tỉ lệ nhà mái bằng
-    twoFloorShare: 0.45,  // trong nhà mái bằng: tỉ lệ 2 tầng (tối đa 2)
-    wideShare: 0.3,       // trong nhà mái bằng: tỉ lệ nhà rộng 2 gian
-    thatchShare: 0.2,     // trong nhà mái ngói: tỉ lệ còn mái rơm
+    // Nhà khối kiểu Godus (src/render/props/blockhouse.js)
+    shapeShares: { square: 0.55, stagger: 0.3, rect: 0.15 }, // vuông là chính, so le, chữ nhật ít
+    twoFloorShare: 0.35,
+    roofShares: { hip: 0.62, flat: 0.3, thatch: 0.08 },        // mái ngói thấp / mái bằng có gờ / mái rơm
+    walls: [0xf4efe4, 0xf2ebdd, 0xefe6d2, 0xf3e6cf, 0xf0e2d6, 0xebe6d8], // tường kem như Godus
     shopShare: 0.4,       // tỉ lệ nhà có bảng hiệu
     lampEvery: 2,         // đèn đường mỗi n ô đường
-    signs: ['Tạp hoá', 'Cà phê', 'Sửa xe', 'Cơm bình dân', 'Hớt tóc', 'Bánh mì', 'Thuốc lá', 'Bún bò'],
-    paints: [0xf2d98a, 0xbcd9e0, 0xf0c4b8, 0xcfe3c0, 0xf4efe4, 0xe8cfa0], // màu sơn tường nhà mái bằng
-    accents: [0x6fa86a, 0xd96f4a, 0x6f8fb8, 0xe0b04a],                    // màu mái hiên, cửa cuốn
-    flatScale: 0.6,       // 1 gian Modular (1×0.63×1) thu về kích thước bản đồ
-    tileScale: 0.8,       // nhà mái ngói dựng bằng code
-    setback: 0.25,        // lùi nhà về sau tâm ô, chừa sân trước
+    signs: ['GROCERY', 'COFFEE', 'REPAIR', 'NOODLES', 'BAKERY', 'BARBER', 'TEA', 'MARKET'],
+    brandSign: 'BRAVO6',  // biển thương hiệu: chữ trắng nền đen, treo ở cửa hàng gần cổng đền nhất
+    houseScale: 1.2,      // cửa nhà cao ≈ người (người chibi đầu to)
+    setback: 0.25,        // lùi nhà về sau tâm ô, chừa sân trước (ô một nhà)
+    smallHouseScale: 0.85, // nhà chung ô thu nhỏ
   },
   // Model dùng cho khu dân cư (assets/kenney/<đường dẫn>.glb)
   villageModels: {
-    cells: ['modular/building-block', 'modular/building-door', 'modular/building-window', 'modular/building-windows',
-      'modular/building-door-window', 'modular/building-window-awnings', 'modular/building-window-balcony'],
-    roof: ['modular/roof-flat-top'],
-    extras: ['modular/detail-ac-a', 'modular/door-brown'],
     garden: ['nature/fence_simpleLow', 'nature/path_stone', 'nature/pot_large', 'nature/pot_small', 'nature/flower_purpleA',
       'nature/flower_redA', 'nature/flower_yellowA', 'nature/crops_leafsStageB', 'nature/plant_flatShort', 'nature/plant_bushSmall'],
+  },
+  people: {
+    height: 0.26,         // chiều cao người (đơn vị thế giới) — thước để căn tỉ lệ nhà, đền
+    perHouse: [1, 3],     // số người mỗi nhà
+    speed: 0.45,          // tốc độ đi (đơn vị/giây)
+    idle: [3, 14],        // đứng yên bao lâu giữa hai chuyến (giây)
+    goHomeChance: 0.25,
+    templeChance: 0.3,    // ban ngày: tỉ lệ đi viếng đền
+    playerStart: [1, 1],  // ô nhân vật chính đứng lúc đầu (sân đền)
+    hairStyles: 6,        // 0 ngắn · 1 dài · 2 búi · 3 hói/tóc bạc thưa · 4 nón lá · 5 mũ lưỡi trai
+    skins: [0xf2d0b0, 0xe6bc94, 0xd4a27a, 0xb8865e],
+    hairColors: [0x2b2522, 0x3d2c24, 0x5a4234, 0xbdb6ae, 0xe8e2da],
+    shirts: [0xf4f1ea, 0x8fb8d8, 0xe9a3a0, 0xf2d98a, 0x9cc79a, 0xc9a8d8, 0xe09a5a, 0x6f8fb8, 0xd8d0c0],
+    pants: [0x3d4558, 0x5a4a3e, 0x6b6f78, 0x2f3a4a, 0x8a7a62],
+    // Nhân vật chính: dân văn phòng — áo sơ mi trắng, quần sẫm, tóc đen ngắn (chỉ số vào các bảng trên)
+    playerLook: { hair: 0, skin: 1, hairColor: 0, shirt: 0, pants: 3 },
   },
   aura: {
     minRadius: 2.2,       // bán kính vùng pháp lực khi đền hoang tàn (tạm, sau tính từ pháp lực)

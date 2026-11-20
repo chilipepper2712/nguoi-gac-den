@@ -2,8 +2,10 @@
 
 import { createState } from './sim/state.js';
 import { tickClock } from './sim/clock.js';
+import { tickPeople } from './sim/people.js';
 import { createView } from './render/view.js';
 import { createDevPanel } from './ui/devpanel.js';
+import * as THREE from 'three';
 
 const params = new URLSearchParams(location.search);
 const seed = Number(params.get('seed')) || 1;
@@ -23,6 +25,27 @@ if (params.has('dist')) {
   camera.position.sub(controls.target).setLength(Number(params.get('dist'))).add(controls.target);
   controls.update();
 }
+// ?look=q,r cho camera nhìn vào một ô (chụp kiểm tra)
+if (params.has('look')) {
+  const [lq, lr] = params.get('look').split(',').map(Number);
+  const S = 1;
+  const x = S * Math.sqrt(3) * (lq + lr / 2);
+  const z = S * 1.5 * lr;
+  const { camera, controls } = view;
+  const off = camera.position.clone().sub(controls.target);
+  controls.target.set(x, controls.target.y, z);
+  camera.position.copy(controls.target).add(off);
+  controls.update();
+}
+// ?az=độ xoay camera quanh điểm nhìn (0 = nhìn từ phía +z)
+if (params.has('az')) {
+  const { camera, controls } = view;
+  const off = camera.position.clone().sub(controls.target);
+  const sph = new THREE.Spherical().setFromVector3(off);
+  sph.theta = (Number(params.get('az')) * Math.PI) / 180;
+  camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(sph));
+  controls.update();
+}
 const panel = params.get('panel') === '0' ? null : createDevPanel(state);
 
 // Cảnh thử asset (không phải gameplay)
@@ -40,6 +63,8 @@ function frame(now) {
   const dt = Math.min((now - last) / 1000, 0.1);
   last = now;
   tickClock(state, dt);
+  // Di chuyển nội suy mỗi khung (rẻ); tìm đường chỉ khi một người chọn điểm đến mới
+  if (!state.clock.paused || params.get('walk') === '1') tickPeople(state, dt * (state.clock.paused ? 1 : state.clock.speed));
   view.render(state, dt);
   if (panel) panel.update();
   frames += 1;

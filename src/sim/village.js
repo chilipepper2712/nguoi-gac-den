@@ -1,7 +1,8 @@
 // Khu dân cư quanh đền: nhà, đường đi bộ nối về cổng đền, đèn đường. Dữ liệu thuần trong state.
 //
 // map.village = {
-//   houses: [{ q, r, facing, style: 'flat'|'tile', floors, wide, variant, level, paint, accent, sign }],
+//   houses: [{ q, r, facing, slot, count, shape: 'square'|'stagger'|'rect', floors: [f0, f1], roof: 'hip'|'flat'|'thatch', wall, yard, sign }],
+//            nhiều nhà có thể chung một ô (slot 0..count-1); yard: 'garden' | 'pot' | 'none'
 //   roads:  [{ q, r }]   theo thứ tự mở đường (ô đầu là cổng đền)
 //   lamps:  [{ q, r }]   đèn đường (nằm trên ô đường)
 // }
@@ -100,7 +101,8 @@ export function generateVillage(state) {
   // Tham lam: mỗi lần xét nhóm ứng viên điểm tốt nhất, chọn ô có đường nối ngắn nhất về mạng đường → làng mọc thành cụm
   const score = new Map(candidates.map((t, i) => [t, i]));
   let pool = candidates;
-  while (houses.length < V.houses && pool.length) {
+  const lots = []; // ô đất có nhà
+  while (lots.length < V.houseTiles && pool.length) {
     // Chi phí = độ dài đường nối mới + độ lệch khỏi tâm làng (thứ hạng điểm) → làng mọc gọn từ lối ra của sân
     const ranked = [];
     for (const t of pool) {
@@ -130,24 +132,43 @@ export function generateVillage(state) {
       if (!roadSet.has(kp)) { roadSet.add(kp); roads.push(p); }
     }
     pool = pool.filter((x) => !roadSet.has(key(x.q, x.r)));
-    const style = rnd() < V.flatRoofShare ? 'flat' : 'tile';
-    houses.push({
-      q: t.q, r: t.r, facing: dirTo(t, path[1]),
-      style,
-      floors: style === 'flat' && rnd() < V.twoFloorShare ? 2 : 1,
-      wide: style === 'flat' && rnd() < V.wideShare,
-      variant: Math.floor(rnd() * 3),
-      level: rnd() < V.thatchShare ? 0 : rnd() < 0.5 ? 1 : 2,
-      paint: Math.floor(rnd() * V.paints.length),
-      accent: Math.floor(rnd() * V.accents.length),
-      sign: null,
-    });
+    lots.push({ t, facing: dirTo(t, path[1]) });
   }
+
+  // Quy hoạch kiểu Godus: ô ở lõi làng (gần tâm làng) chứa 2–3 nhà nhỏ sát nhau, ô rìa thưa hơn.
+  // Nhà trên cùng một ô chung hướng mặt tiền; slot = vị trí trong ô, count = số nhà trên ô.
+  lots.forEach(({ t, facing }, i) => {
+    // Lõi làng = nửa số ô mọc trước (gần đền nhất) → dày nhà; rìa thưa
+    const core = i < Math.ceil(lots.length * V.coreShare);
+    const roll = rnd();
+    const count = core ? (roll < V.tripleShare ? 3 : 2) : (roll < V.edgePairShare ? 2 : 1);
+    for (let slot = 0; slot < count; slot++) {
+      const small = count > 1;
+      const pick = (shares) => { let x = rnd(); for (const [k, v] of Object.entries(shares)) { if ((x -= v) < 0) return k; } return Object.keys(shares)[0]; };
+      const shape = small ? 'square' : pick(V.shapeShares);
+      const f0 = rnd() < V.twoFloorShare ? 2 : 1;
+      houses.push({
+        q: t.q, r: t.r, facing, slot, count,
+        shape,
+        floors: [f0, shape === 'stagger' ? 3 - f0 : f0], // khối so le cao thấp khác nhau
+        roof: pick(V.roofShares),
+        wall: Math.floor(rnd() * V.walls.length),
+        yard: small ? 'none' : rnd() < V.gardenShare ? 'garden' : rnd() < 0.5 ? 'pot' : 'none',
+        sign: null,
+      });
+    }
+  });
   // Bảng hiệu: ưu tiên nhà gần cổng
   const byGate = [...houses].sort((a, b) => distance(a.q, a.r, gq, gr) - distance(b.q, b.r, gq, gr));
   let signIdx = Math.floor(rnd() * V.signs.length);
+  let brand = false;
   for (const h of byGate) {
-    if (rnd() < V.shopShare) { h.sign = signIdx % V.signs.length; signIdx += 1; }
+    if (h.slot < 2 && rnd() < V.shopShare) {
+      // Cửa hàng đầu tiên (gần cổng nhất) treo biển thương hiệu; chỉ số V.signs.length = biển thương hiệu
+      if (!brand) { h.sign = V.signs.length; brand = true; continue; }
+      h.sign = signIdx % V.signs.length;
+      signIdx += 1;
+    }
   }
 
   const lamps = roads.filter((t, i) => i > 0 && i % V.lampEvery === 0 && t.ramp === null).map((t) => ({ q: t.q, r: t.r }));
