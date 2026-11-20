@@ -89,7 +89,8 @@ export const CONFIG = {
   people: {
     height: 0.26,         // chiều cao người (đơn vị thế giới) — thước để căn tỉ lệ nhà, đền
     perHouse: [1, 3],     // số người mỗi nhà
-    speed: 0.45,          // tốc độ đi (đơn vị/giây)
+    speed: 0.45,          // tốc độ đi của dân (đơn vị/giây, nhân theo tốc độ đồng hồ)
+    playerSpeed: 1.1,     // nhân vật chính (đơn vị/giây, thời gian thật)
     idle: [3, 14],        // đứng yên bao lâu giữa hai chuyến (giây)
     goHomeChance: 0.25,
     templeChance: 0.3,    // ban ngày: tỉ lệ đi viếng đền
@@ -123,6 +124,10 @@ export const CONFIG = {
     minRadius: 2.2,       // bán kính vùng pháp lực khi đền hoang tàn (tạm, sau tính từ pháp lực)
     maxRadius: 6.5,       // khi đền đã sửa
   },
+  input: {
+    tapMaxMove: 10,       // px: nhấc tay trong phạm vi này mới tính là chạm (không phải kéo)
+    tapMaxMs: 350,
+  },
   camera: {
     fov: 30,              // FOV hẹp cho cảm giác gần isometric như ảnh tham khảo
     distance: 60,         // khoảng cách ban đầu tới tâm
@@ -132,6 +137,8 @@ export const CONFIG = {
     minPolarAngle: 0.5,
     maxPolarAngle: 1.15,
     azimuth: Math.PI / 4, // xoay 45° cho góc nhìn chéo
+    followBelow: 32,      // zoom gần hơn khoảng này thì camera bám theo nhân vật chính khi đi
+    followRate: 3,        // độ bám (càng lớn càng sát)
   },
   terrainView: {
     hexSize: 1,           // cạnh ô lục giác (đơn vị thế giới)

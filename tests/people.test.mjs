@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { createState, serialize, deserialize } from '../src/sim/state.js';
-import { tickPeople, findPath } from '../src/sim/people.js';
+import { tickPeople, findPath, commandMove, tickPlayer, playerOf } from '../src/sim/people.js';
 import { tickClock } from '../src/sim/clock.js';
 import { key, neighbor } from '../src/sim/hex.js';
 import { canStep } from '../src/sim/terrain.js';
@@ -63,4 +63,31 @@ test('lưu/tải giữ nguyên người', () => {
   tickClock(s, 1);
   for (let i = 0; i < 100; i++) tickPeople(s, 0.1);
   assert.deepEqual(deserialize(serialize(s)).people, s.people);
+});
+
+test('ra lệnh cho nhân vật chính đi tới ô, tới nơi thì đứng lại', () => {
+  const s = createState({ seed: 2 });
+  const p = playerOf(s);
+  const h = s.map.village.houses[0];
+  const dest = commandMove(s, p.id, h.q, h.r);
+  assert.deepEqual(dest, [h.q, h.r]);
+  for (let i = 0; i < 2000 && p.path; i++) tickPlayer(s, 0.05);
+  assert.equal(p.path, null);
+  assert.deepEqual([p.q, p.r], [h.q, h.r]);
+});
+
+test('chạm vào điện thờ thì đi tới ô kề; đổi đích giữa chừng không giật lùi', () => {
+  const s = createState({ seed: 3 });
+  const p = playerOf(s);
+  const dest = commandMove(s, p.id, 0, 0);
+  assert.ok(dest && !(dest[0] === 0 && dest[1] === 0));
+  assert.equal(Math.max(Math.abs(dest[0]), Math.abs(dest[1]), Math.abs(dest[0] + dest[1])), 1, 'đích phải kề điện thờ');
+  const h = s.map.village.houses[1];
+  commandMove(s, p.id, h.q, h.r);
+  tickPlayer(s, 0.3);
+  const before = [...p.path[p.seg]];
+  const t0 = p.t;
+  commandMove(s, p.id, h.q, h.r);
+  assert.deepEqual(p.path[p.seg], before, 'đoạn đang đi phải giữ nguyên');
+  assert.equal(p.t, t0);
 });

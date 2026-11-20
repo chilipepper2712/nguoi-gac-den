@@ -2,7 +2,11 @@
 
 import { createState } from './sim/state.js';
 import { tickClock } from './sim/clock.js';
-import { tickPeople } from './sim/people.js';
+import { tickPeople, tickPlayer, commandMove, playerOf } from './sim/people.js';
+import { createTapInput } from './ui/input.js';
+import { worldToHex, hexToWorld } from './sim/hex.js';
+import { levelY } from './render/terrain.js';
+import { CONFIG } from './config.js';
 import { createView } from './render/view.js';
 import { createDevPanel } from './ui/devpanel.js';
 import { openTalisman } from './ui/talisman.js';
@@ -48,6 +52,16 @@ if (params.has('az')) {
   controls.update();
 }
 const panel = params.get('panel') === '0' ? null : createDevPanel(state);
+
+// Chạm ô trên bản đồ → nhân vật chính đi tới đó
+createTapInput(view, ({ point }) => {
+  if (!point) return;
+  const [q, r] = worldToHex(point.x, point.z, CONFIG.terrainView.hexSize);
+  const dest = commandMove(state, playerOf(state).id, q, r);
+  if (!dest) return;
+  const [x, z] = hexToWorld(dest[0], dest[1], CONFIG.terrainView.hexSize);
+  view.showMarker(x, levelY(state.map.tiles[`${dest[0]},${dest[1]}`].h), z);
+});
 // ?trace=1|3 mở ngay màn vẽ bùa; &glyph=song,nui ép hình (để chụp kiểm tra); &power=0..2
 if (params.has('trace')) {
   openTalisman({
@@ -77,6 +91,7 @@ function frame(now) {
   tickClock(state, dt);
   // Di chuyển nội suy mỗi khung (rẻ); tìm đường chỉ khi một người chọn điểm đến mới
   if (!state.clock.paused || params.get('walk') === '1') tickPeople(state, dt * (state.clock.paused ? 1 : state.clock.speed));
+  if (!state.clock.paused || params.get('walk') === '1') tickPlayer(state, dt);
   view.render(state, dt);
   if (panel) panel.update();
   frames += 1;

@@ -251,5 +251,11 @@ export function createPeopleView(state) {
     }
   }
 
-  return { object: group, update };
+  // Vị trí thế giới hiện tại của một người (để camera bám, gắn nhãn)
+  function positionOf(person) {
+    const w = worldOf(person);
+    return new THREE.Vector3(w.x, w.y, w.z);
+  }
+
+  return { object: group, update, positionOf };
 }

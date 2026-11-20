@@ -14,6 +14,7 @@ import { buildGhost } from './ghost.js';
 import { createLamps } from './lamps.js';
 import { createSky } from './sky.js';
 import { applyFakeLight, fakeLightUniforms } from './fakelight.js';
+import { playerOf } from '../sim/people.js';
 
 export function createView(container, state) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -78,6 +79,17 @@ export function createView(container, state) {
   scene.add(village.object);
   const people = createPeopleView(state);
   scene.add(people.object);
+
+  // Vòng đánh dấu đích khi chạm ra lệnh đi
+  const marker = new THREE.Mesh(
+    new THREE.RingGeometry(0.16, 0.22, 24).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0xffe08a, transparent: true, opacity: 0, depthWrite: false }),
+  );
+  marker.renderOrder = 2;
+  scene.add(marker);
+  let markerLife = 0;
+  const followTarget = new THREE.Vector3();
+  const followDelta = new THREE.Vector3();
   let elapsed = 0;
   let templeGroup = null;
   let builtCondition = -1;
@@ -137,7 +149,9 @@ export function createView(container, state) {
   resize();
 
   const view = {
-    renderer, scene, camera, controls, lights: { hemi, sun }, render, resize, onFrame: null, night: 0,
+    renderer, scene, camera, controls, lights: { hemi, sun }, render, resize, onFrame: null, night: 0, terrain,
+    showMarker(x, y, z) { marker.position.set(x, y + 0.02, z); markerLife = 1.5; },
+    positionOf: (person) => people.positionOf(person),
     ready: Promise.all([flora.ready, debrisReady, village.ready]),
   };
 
@@ -154,6 +168,23 @@ export function createView(container, state) {
     village.update(s.night);
     elapsed += dt;
     people.update(dt, elapsed);
+
+    // Vòng đích: nhấp nháy rồi mờ dần, tắt khi nhân vật tới nơi
+    const player = playerOf(st);
+    if (markerLife > 0) {
+      markerLife = player && player.path ? Math.max(markerLife - dt, 0.6) : markerLife - dt * 2;
+      marker.material.opacity = Math.min(1, markerLife) * (0.7 + 0.3 * Math.sin(elapsed * 8));
+      marker.scale.setScalar(1 + 0.12 * Math.sin(elapsed * 8));
+    } else marker.material.opacity = 0;
+
+    // Camera bám nhân vật chính khi đang đi và đang zoom gần
+    if (player && player.path && camera.position.distanceTo(controls.target) < CONFIG.camera.followBelow) {
+      const pos = people.positionOf(player);
+      followTarget.set(pos.x, controls.target.y, pos.z);
+      followDelta.subVectors(followTarget, controls.target).multiplyScalar(1 - Math.exp(-dt * CONFIG.camera.followRate));
+      controls.target.add(followDelta);
+      camera.position.add(followDelta);
+    }
     for (const g of ghosts) {
       g.angle += dt * 0.05;
       const r = auraNow + g.extra;

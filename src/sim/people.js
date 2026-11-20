@@ -95,23 +95,67 @@ function chooseGoal(state, p) {
   return { goal: 'wander', to: [r.q, r.r] };
 }
 
+// Đi tiếp trên đường đang có; trả về true khi vừa tới nơi
+function advance(p, dt, speed) {
+  p.t += (dt * speed) / (CONFIG.terrainView.hexSize * Math.sqrt(3));
+  while (p.t >= 1 && p.path) {
+    p.t -= 1;
+    p.seg += 1;
+    if (p.seg >= p.path.length - 1) {
+      [p.q, p.r] = p.path[p.path.length - 1];
+      p.path = null;
+      p.seg = 0;
+      p.t = 0;
+      return true;
+    }
+  }
+  return false;
+}
+
+export function playerOf(state) {
+  return state.people.find((p) => p.kind === 'player');
+}
+
+// Ra lệnh cho một người đi tới ô (q, r). Ô không tới được (vd ô điện thờ) thì đi tới ô kề gần nhất tới được.
+// Đang đi dở thì nối đường mới vào ô kế tiếp, không giật về giữa ô. Trả về ô đích thật, hoặc null nếu không đi được.
+export function commandMove(state, id, q, r) {
+  const p = state.people.find((x) => x.id === id);
+  if (!p) return null;
+  const from = p.path ? p.path[Math.min(p.seg + 1, p.path.length - 1)] : [p.q, p.r];
+  let path = findPath(state.map, from, [q, r]);
+  if (!path) {
+    // thử các ô kề đích, lấy đường ngắn nhất
+    for (let d = 0; d < 6; d++) {
+      const alt = findPath(state.map, from, neighbor(q, r, d));
+      if (alt && (!path || alt.length < path.length)) path = alt;
+    }
+  }
+  if (!path) return null;
+  if (p.path) {
+    p.path = [p.path[p.seg], ...path];
+    p.seg = 0;
+  } else {
+    if (path.length < 2) return path[0];
+    p.path = path;
+    p.seg = 0;
+    p.t = 0;
+  }
+  p.goal = 'move';
+  return path[path.length - 1];
+}
+
+// Nhân vật chính đi theo thời gian thật (không nhân tốc độ đồng hồ)
+export function tickPlayer(state, dt) {
+  const p = playerOf(state);
+  if (p && p.path && advance(p, dt, P.playerSpeed)) p.goal = 'idle';
+}
+
 export function tickPeople(state, dt) {
   const night = isNight(state.clock);
   for (const p of state.people) {
     if (p.kind !== 'villager') continue;
     if (p.path) {
-      p.t += (dt * P.speed) / CONFIG.terrainView.hexSize / Math.sqrt(3);
-      while (p.t >= 1 && p.path) {
-        p.t -= 1;
-        p.seg += 1;
-        if (p.seg >= p.path.length - 1) {
-          [p.q, p.r] = p.path[p.path.length - 1];
-          p.path = null;
-          p.seg = 0;
-          p.t = 0;
-          p.wait = P.idle[0] + nextRandom(state) * (P.idle[1] - P.idle[0]);
-        }
-      }
+      if (advance(p, dt, P.speed)) p.wait = P.idle[0] + nextRandom(state) * (P.idle[1] - P.idle[0]);
       continue;
     }
     // Đêm: đang ở ngoài thì về nhà ngay

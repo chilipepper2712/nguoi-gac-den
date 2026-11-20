@@ -16,7 +16,7 @@ Ký hiệu chặn: ⛔ = chờ người dùng quyết (xem cuối file).
 
 ## Giai đoạn 1 — nền gameplay (làm trước, không bị chặn)
 
-1. **[mạnh] Điều khiển nhân vật chính**: chạm ô → đi tới (tìm đường có sẵn trong `sim/people.js`), camera bám theo khi zoom gần, nút chuyển chế độ quản lý/nhập vai.
+1. ~~**[mạnh] Điều khiển nhân vật chính**~~ — xong: chạm ô → đi tới (`commandMove`), chạm điện thờ thì tới ô kề, đổi đích giữa chừng không giật, vòng đánh dấu đích, camera bám khi zoom gần (`camera.followBelow`). Còn: nút chuyển chế độ (làm cùng HUD, việc 5).
 2. **[mạnh] Chỉ số + kinh tế ngày**: tiền, pháp lực, uy tín trong state; cuối ngày tính quyên góp theo khách viếng; vòng pháp lực tính từ pháp lực (thay cho trạng thái đền).
 3. **[mạnh] Hệ tương tác**: chạm vật → hành động theo ngữ cảnh (dọn, sửa, nói chuyện), tốn thời gian, thanh tiến độ trên đầu nhân vật.
 4. **[mạnh] Dọn 3 khu**: chia sân đền thành 3 khu; đồ đổ nát thành thực thể trong state; dọn xong khu → tăng trạng thái đền theo bậc (0 → 0.33 → 0.66 → 1) thay cho công tắc hoang/sửa.
