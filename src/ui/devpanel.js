@@ -5,7 +5,7 @@ import { clockLabel } from '../sim/clock.js';
 import { openTalisman } from './talisman.js';
 import { CONFIG } from '../config.js';
 
-export function createDevPanel(state) {
+export function createDevPanel(state, { restart } = {}) {
   const el = document.createElement('div');
   el.id = 'devpanel';
   el.innerHTML = `
@@ -21,6 +21,7 @@ export function createDevPanel(state) {
     <div class="row buttons">
       <button id="dp-tal1" type="button">Bùa 1 hình</button>
       <button id="dp-tal3" type="button">Bùa 3 hình</button>
+      <button id="dp-restart" type="button">Chơi lại</button>
     </div>`;
   document.body.appendChild(el);
 
@@ -47,6 +48,7 @@ export function createDevPanel(state) {
   });
   $('#dp-tal1').addEventListener('click', () => openTalisman({ count: 1 }));
   $('#dp-tal3').addEventListener('click', () => openTalisman({ count: 3 }));
+  $('#dp-restart').addEventListener('click', () => { if (restart && confirm('Xoá bản lưu và chơi lại từ đầu?')) restart(); });
 
   return {
     update() {

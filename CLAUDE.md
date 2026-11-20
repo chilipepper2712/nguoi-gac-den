@@ -22,7 +22,10 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
 ## Kiến trúc (giữ đúng, test có kiểm tra một phần)
 
 - `src/sim/` — luật chơi và state, **logic thuần**: không import `three`, không import `src/render/`, không đụng `document`/`window`, không dùng `Math.random` (dùng `src/sim/rng.js`, trạng thái RNG nằm trong state).
-- State phải JSON-serializable (không class, không Map/Set, không tham chiếu vòng). Đổi cấu trúc state thì tăng `SAVE_VERSION` trong `src/sim/state.js`.
+- State phải JSON-serializable (không class, không Map/Set, không tham chiếu vòng). Đổi cấu trúc state thì **tăng `SAVE_VERSION`** trong `src/sim/state.js` — người chơi có bản lưu cũ trên GitHub Pages, quên tăng là game mở bản lưu cũ thiếu trường rồi lỗi.
+  Lưu trong trình duyệt: `src/ui/save.js` (tự lưu mỗi sáng / 30 giây / khi rời trang). Có tham số thử nghiệm trên URL thì luôn chơi mới và không tự lưu; `?new=1` xoá bản lưu.
+- Vòng chơi: `src/sim/temple.js` (đồ đổ nát 3 khu, `commandClean`/`tickTasks`, `auraRadius` theo pháp lực), `src/sim/economy.js` (quyên góp khi viếng), `src/sim/mood.js` (hạnh phúc, đức tin, suy nghĩ, mong ước).
+  Giao diện: `ui/hud.js` (chỉ số), `ui/worldui.js` (tiến độ, chữ bay, thông báo — đọc `state.events`), `ui/personpanel.js` (chạm người dân), `ui/input.js` (chạm vs kéo).
 - `src/render/` — chỉ đọc state để vẽ, không sửa luật.
 - `src/config.js` — mọi con số cân bằng và tham số hiển thị. Không rải số "ma thuật" trong logic.
 - `src/sim/hex.js` toán lục giác (axial, đỉnh nhọn, hướng d ↔ góc 60°·d). `src/sim/terrain.js` sinh bản đồ bậc + dốc, có luật đi lại (`canStep`).

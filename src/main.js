@@ -8,6 +8,7 @@ import { createHud } from './ui/hud.js';
 import { createWorldUi } from './ui/worldui.js';
 import { createPersonPanel } from './ui/personpanel.js';
 import { tickEconomy } from './sim/economy.js';
+import { loadSaved, createAutosave, clearSave } from './ui/save.js';
 import { tickTasks, commandClean, debrisWorld } from './sim/temple.js';
 import { worldToHex, hexToWorld } from './sim/hex.js';
 import { levelY } from './render/terrain.js';
@@ -21,7 +22,11 @@ const params = new URLSearchParams(location.search);
 const seed = Number(params.get('seed')) || 1;
 const debug = params.get('debug') === '1';
 
-const state = createState({ seed });
+// Có bản lưu thì chơi tiếp; tham số thử nghiệm trên URL (hoặc ?new=1) thì luôn bắt đầu mới và không tự lưu
+const TEST_PARAMS = ['t', 'temple', 'trace', 'lab', 'look', 'az', 'dist', 'new', 'pause', 'walk', 'seed'];
+const testing = TEST_PARAMS.some((k) => params.has(k));
+if (params.get('new') === '1') clearSave();
+const state = (!testing && loadSaved()) || createState({ seed });
 // Tham số URL để xem nhanh: ?t=0.9 (giờ trong ngày), ?temple=1 (đền đã sửa), ?pause=1
 if (params.has('t')) state.clock.t = Number(params.get('t'));
 if (params.has('temple') && Number(params.get('temple')) > 0.5) {
@@ -61,9 +66,12 @@ if (params.has('az')) {
   camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(sph));
   controls.update();
 }
-const panel = params.get('panel') === '0' ? null : createDevPanel(state);
+const panel = params.get('panel') === '0' ? null : createDevPanel(state, {
+  restart: () => { clearSave(); location.reload(); },
+});
 
 const hud = createHud(state);
+const autosave = testing ? null : createAutosave(state);
 const worldUi = createWorldUi(state, view);
 const personPanel = createPersonPanel(state, { onClose: () => view.select(null) });
 if (!debug) document.getElementById('hud').hidden = true;
@@ -158,6 +166,7 @@ function frame(now) {
   hud.update();
   worldUi.update(dt);
   personPanel.update(dt);
+  if (autosave) autosave.update(dt);
   frames += 1;
   // tools/shot.mjs chờ cờ này trước khi chụp màn hình
   if (frames === 3) Promise.all([labReady, view.ready]).then(() => { window.__ready = true; });
@@ -177,4 +186,4 @@ function frame(now) {
 requestAnimationFrame(frame);
 
 // Để debug trong console
-window.__game = { state, view };
+window.__game = { state, view, save: () => autosave && autosave.now() };

@@ -9,7 +9,7 @@ import { createClock } from './clock.js';
 import { createPeople } from './people.js';
 import { createTempleState, createStats } from './temple.js';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2; // tăng khi đổi cấu trúc state (bản lưu cũ sẽ bị bỏ)
 
 export function createState({ seed = 1 } = {}) {
   const state = {

@@ -21,9 +21,9 @@ Ký hiệu chặn: ⛔ = chờ người dùng quyết (xem cuối file).
 3. ~~**[mạnh] Hệ tương tác**~~ — xong khuôn: chạm vật (chọn theo khoảng cách trên màn hình) → tự đi tới → làm có thời gian, thanh tiến độ, chữ bay lên, thông báo (`person.task`, `state.events`, `ui/worldui.js`). Thêm hành động mới theo khuôn `commandClean`/`tickTasks` trong `sim/temple.js`.
 4. ~~**[mạnh] Dọn 3 khu**~~ — xong: đồ đổ nát là thực thể trong `state.temple.debris`, chia 3 khu, dọn món +1 pháp lực, sạch khu +5 pháp lực +2 uy tín. (Trạng thái đền theo bậc gắn với việc sửa — việc 7.)
 4b. ~~**[mạnh] Chạm vào người dân → bảng thông tin**~~ — xong: tên, tuổi, hạnh phúc, đức tin, suy nghĩ lấy từ trạng thái thật, mong ước theo lứa tuổi (`sim/mood.js`, `ui/personpanel.js`). Hạnh phúc / đức tin hiện tính từ trạng thái, chưa có lịch sử và chưa nối pháp lực (chờ 11b).
-5. **[nhẹ] HUD dọc** — một phần: thanh chỉ số trên cùng (`ui/hud.js`). Còn: thanh hành động dưới, nút chuyển chế độ, giấu bảng thử sau `?debug=1`.
+5. **[nhẹ] HUD dọc** — một phần: thanh chỉ số trên cùng (`ui/hud.js`). Còn: thanh hành động dưới (làm cùng việc 7, khi đã có hành động sửa/xây), nút chuyển chế độ, giấu bảng thử sau `?debug=1` khi có UI thật thay thế.
    Mô tả gốc: thanh trên (tiền, pháp lực, uy tín, ngày giờ), thanh hành động dưới, thông báo nổi; thay bảng thử (giữ bảng thử sau `?debug=1`).
-6. **[nhẹ] Lưu/tải** vào localStorage (state đã JSON-serializable), tự lưu mỗi sáng.
+6. ~~**[nhẹ] Lưu/tải**~~ — xong: localStorage, tự lưu mỗi sáng / 30 giây / khi rời trang, bản lưu hỏng hoặc khác phiên bản thì bỏ, nút "Chơi lại" ở bảng thử.
 
 ## Giai đoạn 2 — vòng chơi chính
 
