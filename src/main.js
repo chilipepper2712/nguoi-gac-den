@@ -1,11 +1,13 @@
 // Khởi động: tạo state, tạo view, chạy vòng lặp khung hình.
 
 import { createState } from './sim/state.js';
-import { tickClock } from './sim/clock.js';
+import { tickClock, isNight } from './sim/clock.js';
 import { tickPeople, tickPlayer, commandMove, playerOf } from './sim/people.js';
 import { createTapInput } from './ui/input.js';
 import { createHud } from './ui/hud.js';
 import { createWorldUi } from './ui/worldui.js';
+import { createPersonPanel } from './ui/personpanel.js';
+import { tickEconomy } from './sim/economy.js';
 import { tickTasks, commandClean, debrisWorld } from './sim/temple.js';
 import { worldToHex, hexToWorld } from './sim/hex.js';
 import { levelY } from './render/terrain.js';
@@ -63,6 +65,7 @@ const panel = params.get('panel') === '0' ? null : createDevPanel(state);
 
 const hud = createHud(state);
 const worldUi = createWorldUi(state, view);
+const personPanel = createPersonPanel(state, { onClose: () => view.select(null) });
 if (!debug) document.getElementById('hud').hidden = true;
 
 // Chạm trên bản đồ: trúng đồ đổ nát chưa dọn (theo khoảng cách trên màn hình) → đi tới dọn; không thì đi tới ô đó
@@ -78,8 +81,32 @@ function pickDebris(sx, sy) {
   }
   return best && best.d;
 }
+// Chạm trúng người dân (đang hiện trên bản đồ) → mở bảng thông tin
+function pickPerson(sx, sy) {
+  const r = view.renderer.domElement.getBoundingClientRect();
+  let best = null;
+  const night = isNight(state.clock);
+  for (const p of state.people) {
+    if (p.kind !== 'villager') continue;
+    const h = state.map.village.houses[p.home];
+    if (night && !p.path && p.q === h.q && p.r === h.r) continue; // đêm ở trong nhà, không thấy
+    const pos = view.positionOf(p);
+    const v = pos.clone().setY(pos.y + CONFIG.people.height * 0.5).project(view.camera);
+    if (v.z > 1) continue;
+    const dist = Math.hypot(((v.x + 1) / 2) * r.width - sx, ((1 - v.y) / 2) * r.height - sy);
+    if (dist < CONFIG.input.pickPersonRadius && (!best || dist < best.dist)) best = { p, dist };
+  }
+  return best && best.p;
+}
+
 createTapInput(view, ({ point, screen }) => {
   const player = playerOf(state);
+  const who = pickPerson(screen.x, screen.y);
+  if (who) {
+    personPanel.open(who);
+    view.select(who);
+    return;
+  }
   const d = pickDebris(screen.x, screen.y);
   if (d) {
     if (commandClean(state, player.id, d.id)) {
@@ -124,12 +151,13 @@ function frame(now) {
   if (document.body.dataset.overlay && frames > 3) { last = now; requestAnimationFrame(frame); return; }
   tickClock(state, dt);
   // Di chuyển nội suy mỗi khung (rẻ); tìm đường chỉ khi một người chọn điểm đến mới
-  if (!state.clock.paused || params.get('walk') === '1') tickPeople(state, dt * (state.clock.paused ? 1 : state.clock.speed));
+  if (!state.clock.paused || params.get('walk') === '1') { tickPeople(state, dt * (state.clock.paused ? 1 : state.clock.speed)); tickEconomy(state); }
   if (!state.clock.paused || params.get('walk') === '1') { tickPlayer(state, dt); tickTasks(state, dt); }
   view.render(state, dt);
   if (panel) panel.update();
   hud.update();
   worldUi.update(dt);
+  personPanel.update(dt);
   frames += 1;
   // tools/shot.mjs chờ cờ này trước khi chụp màn hình
   if (frames === 3) Promise.all([labReady, view.ready]).then(() => { window.__ready = true; });

@@ -102,6 +102,9 @@ export const CONFIG = {
     pants: [0x3d4558, 0x5a4a3e, 0x6b6f78, 0x2f3a4a, 0x8a7a62],
     // Nhân vật chính: dân văn phòng — áo sơ mi trắng, quần sẫm, tóc đen ngắn (chỉ số vào các bảng trên)
     playerLook: { hair: 0, skin: 1, hairColor: 0, shirt: 0, pants: 3 },
+    playerName: 'Minh',   // tên tạm của nhân vật chính
+    names: ['Tư', 'Hạnh', 'Tùng', 'Lan', 'Bảy', 'Mai', 'Sơn', 'Hoa', 'Phúc', 'Thảo', 'Dũng', 'Ngọc', 'Khang', 'Vy', 'Tâm', 'Hùng', 'Yến', 'Lộc', 'Nga', 'Quý'],
+    ageRange: [16, 78],   // tuổi dân làng; kiểu tóc thưa (3) luôn là người già
   },
   // Vẽ bùa đuổi ma (bản chơi thử). Hình tự chế trong src/sim/talisman.js.
   talisman: {
@@ -127,6 +130,18 @@ export const CONFIG = {
   },
   economy: {
     startMoney: 500,      // tiền thừa kế + tiền nghỉ việc lúc đầu (tạm)
+    donationBase: 6,      // tiền một lượt viếng đền ở hạnh phúc 50 (tạm)
+    prestigeDonation: 0.05, // mỗi điểm uy tín tăng 5% tiền quyên góp
+  },
+  mood: {
+    baseHappiness: [35, 60], // hạnh phúc gốc mỗi người (theo id)
+    safeBonus: 12,        // nhà trong vùng bảo vệ
+    unsafePenalty: 8,     // nhà ngoài vùng bảo vệ
+    perCleanZone: 4,      // mỗi khu sân đền đã sạch
+    templeRepaired: 12,   // đền đã sửa xong
+    baseFaith: [5, 25],
+    faithPerPower: 0.4,
+    faithFromPowerCap: 50,
   },
   cleanup: {
     workSec: { default: 3, 'survival/structure': 5, 'survival/tree-log': 4, 'nature/log': 4, 'nature/grass': 2, 'nature/mushroom_tanGroup': 2 },
@@ -139,6 +154,7 @@ export const CONFIG = {
     tapMaxMove: 10,       // px: nhấc tay trong phạm vi này mới tính là chạm (không phải kéo)
     tapMaxMs: 350,
     pickRadius: 36,       // px: chạm cách vật trong phạm vi này thì tính là chạm vào vật
+    pickPersonRadius: 26, // px: chạm trúng người
   },
   camera: {
     fov: 30,              // FOV hẹp cho cảm giác gần isometric như ảnh tham khảo

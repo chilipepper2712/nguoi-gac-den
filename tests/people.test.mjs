@@ -91,3 +91,27 @@ test('chạm vào điện thờ thì đi tới ô kề; đổi đích giữa ch�
   assert.deepEqual(p.path[p.seg], before, 'đoạn đang đi phải giữ nguyên');
   assert.equal(p.t, t0);
 });
+
+test('dân có tên, tuổi; người tóc thưa là người già', async () => {
+  const s = createState({ seed: 6 });
+  for (const p of s.people.filter((x) => x.kind === 'villager')) {
+    assert.ok(typeof p.name === 'string' && p.name.length > 0);
+    assert.ok(p.age >= CONFIG.people.ageRange[0] && p.age <= CONFIG.people.ageRange[1]);
+    if (p.look.hair === 3) assert.ok(p.age >= 62);
+  }
+});
+
+test('viếng đền thì quyên góp; hạnh phúc cao góp nhiều hơn', async () => {
+  const { tickEconomy } = await import('../src/sim/economy.js');
+  const { happinessOf, donationOf } = await import('../src/sim/mood.js');
+  const s = createState({ seed: 5 });
+  s.clock.t = 0.4;
+  const m0 = s.stats.money;
+  for (let i = 0; i < 4000; i++) { tickPeople(s, 0.1); tickEconomy(s); }
+  assert.ok(s.stats.money > m0, 'không ai quyên góp');
+  assert.ok(s.events.some((e) => e.type === 'donation'));
+  const v = s.people.find((x) => x.kind === 'villager');
+  const low = donationOf(s, v);
+  s.temple.condition = 1; s.temple.zonesDone = [true, true, true]; s.stats.power = 100;
+  assert.ok(happinessOf(s, v) > 0 && donationOf(s, v) > low);
+});

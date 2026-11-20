@@ -99,6 +99,14 @@ export function createView(container, state) {
   marker.renderOrder = 2;
   scene.add(marker);
   let markerLife = 0;
+  // Vòng chọn đi theo người đang xem thông tin
+  const selRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.13, 0.17, 24).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85, depthWrite: false }),
+  );
+  selRing.visible = false;
+  scene.add(selRing);
+  let selected = null;
   const followTarget = new THREE.Vector3();
   const followDelta = new THREE.Vector3();
   let elapsed = 0;
@@ -162,6 +170,7 @@ export function createView(container, state) {
   const view = {
     renderer, scene, camera, controls, lights: { hemi, sun }, render, resize, onFrame: null, night: 0, terrain,
     showMarker(x, y, z) { marker.position.set(x, y + 0.02, z); markerLife = 1.5; },
+    select(person) { selected = person; },
     positionOf: (person) => people.positionOf(person),
     ready: Promise.all([flora.ready, debrisReady, village.ready]),
   };
@@ -187,6 +196,12 @@ export function createView(container, state) {
       marker.material.opacity = Math.min(1, markerLife) * (0.7 + 0.3 * Math.sin(elapsed * 8));
       marker.scale.setScalar(1 + 0.12 * Math.sin(elapsed * 8));
     } else marker.material.opacity = 0;
+
+    if (selected) {
+      const sp = people.positionOf(selected);
+      selRing.position.set(sp.x, sp.y + 0.02, sp.z);
+      selRing.visible = true;
+    } else selRing.visible = false;
 
     // Camera bám nhân vật chính khi đang đi và đang zoom gần
     if (player && player.path && camera.position.distanceTo(controls.target) < CONFIG.camera.followBelow) {

@@ -52,6 +52,7 @@ export function createWorldUi(state, view) {
       // Sự kiện mới
       for (const e of state.events.splice(0)) {
         if (e.type === 'cleaned') floatText(`+${e.power} pháp lực`, e.x, groundY(e.x, e.z) + 0.4, e.z);
+        if (e.type === 'donation') floatText(`+${e.amount}`, e.x, groundY(e.x, e.z) + 0.45, e.z, 'money');
         if (e.type === 'zoneDone') toast(`Đã dọn sạch ${ZONE_NAMES[e.zone]}! +${e.power} pháp lực, +${e.prestige} uy tín`);
       }
       // Thanh tiến độ trên đầu nhân vật chính khi đang làm việc

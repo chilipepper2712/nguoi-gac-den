@@ -59,15 +59,18 @@ export function createPeople(state) {
   houses.forEach((h, i) => {
     const n = randomInt(state, P.perHouse[0], P.perHouse[1]);
     for (let k = 0; k < n; k++) {
+      const look = lookFor(state);
+      const age = look.hair === 3 ? randomInt(state, 62, P.ageRange[1]) : randomInt(state, P.ageRange[0], 60);
       people.push({
-        id: people.length, kind: 'villager', home: i, look: lookFor(state),
+        id: people.length, kind: 'villager', home: i, look,
+        name: P.names[randomInt(state, 0, P.names.length - 1)], age,
         q: h.q, r: h.r, path: null, seg: 0, t: 0, wait: nextRandom(state) * P.idle[1], goal: 'home',
       });
     }
   });
   const [pq, pr] = P.playerStart;
   people.push({
-    id: people.length, kind: 'player', home: -1, look: { ...P.playerLook },
+    id: people.length, kind: 'player', home: -1, look: { ...P.playerLook }, name: P.playerName, age: 27,
     q: pq, r: pr, path: null, seg: 0, t: 0, wait: 0, goal: 'idle',
   });
   state.people = people;
@@ -155,7 +158,10 @@ export function tickPeople(state, dt) {
   for (const p of state.people) {
     if (p.kind !== 'villager') continue;
     if (p.path) {
-      if (advance(p, dt, P.speed)) p.wait = P.idle[0] + nextRandom(state) * (P.idle[1] - P.idle[0]);
+      if (advance(p, dt, P.speed)) {
+        p.wait = P.idle[0] + nextRandom(state) * (P.idle[1] - P.idle[0]);
+        if (p.goal === 'temple') p.visited = true; // economy.js tính quyên góp rồi xoá cờ
+      }
       continue;
     }
     // Đêm: đang ở ngoài thì về nhà ngay

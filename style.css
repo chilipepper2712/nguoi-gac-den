@@ -142,3 +142,35 @@ html, body {
   transition: opacity 0.5s; opacity: 1;
 }
 #world-ui .toast.out { opacity: 0; }
+
+/* Bảng thông tin người dân */
+#person-panel {
+  position: fixed;
+  left: 50%;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 16px));
+  padding: 12px 14px 14px;
+  border-radius: 14px;
+  background: rgba(255, 252, 244, 0.96);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  color: #3a3330;
+  font-size: 14px;
+  z-index: 8;
+}
+#person-panel .pp-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+#person-panel .pp-name { font-size: 18px; }
+#person-panel .pp-age { color: #8a7a6a; }
+#person-panel .pp-close { margin-left: auto; border: 0; background: none; font-size: 24px; line-height: 1; color: #8a7a6a; padding: 0 4px; }
+#person-panel .pp-bar { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+#person-panel .pp-bar span { width: 72px; color: #6a5a4a; }
+#person-panel .pp-bar i { flex: 1; height: 8px; border-radius: 4px; background: #eadfcb; overflow: hidden; }
+#person-panel .pp-bar u { display: block; height: 100%; text-decoration: none; }
+#person-panel .pp-happy { background: #e9a24a; }
+#person-panel .pp-faith { background: #c9a2e0; }
+#person-panel .pp-bar em { width: 24px; text-align: right; font-style: normal; font-weight: 700; }
+#person-panel .pp-label { margin-top: 10px; font-size: 12px; font-weight: 700; color: #8a7a6a; text-transform: uppercase; letter-spacing: 0.04em; }
+#person-panel .pp-thoughts { margin: 4px 0 0; padding-left: 18px; }
+#person-panel .pp-thoughts li { margin: 2px 0; }
+#person-panel .pp-wish { margin-top: 4px; font-style: italic; }
+#world-ui .float-text.money { color: #ffe08a; }

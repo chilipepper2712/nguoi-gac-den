@@ -17,10 +17,10 @@ Ký hiệu chặn: ⛔ = chờ người dùng quyết (xem cuối file).
 ## Giai đoạn 1 — nền gameplay (làm trước, không bị chặn)
 
 1. ~~**[mạnh] Điều khiển nhân vật chính**~~ — xong: chạm ô → đi tới (`commandMove`), chạm điện thờ thì tới ô kề, đổi đích giữa chừng không giật, vòng đánh dấu đích, camera bám khi zoom gần (`camera.followBelow`). Còn: nút chuyển chế độ (làm cùng HUD, việc 5).
-2. **[mạnh] Chỉ số + kinh tế ngày** — một phần: tiền / pháp lực / uy tín trong `state.stats`, vòng bảo vệ tính từ pháp lực (`auraRadius`). Còn: quyên góp khi dân viếng đền.
+2. ~~**[mạnh] Chỉ số + kinh tế ngày**~~ — xong: tiền / pháp lực / uy tín trong `state.stats`, vòng bảo vệ tính từ pháp lực (`auraRadius`), dân viếng đền thì quyên góp theo hạnh phúc và uy tín (`sim/economy.js`).
 3. ~~**[mạnh] Hệ tương tác**~~ — xong khuôn: chạm vật (chọn theo khoảng cách trên màn hình) → tự đi tới → làm có thời gian, thanh tiến độ, chữ bay lên, thông báo (`person.task`, `state.events`, `ui/worldui.js`). Thêm hành động mới theo khuôn `commandClean`/`tickTasks` trong `sim/temple.js`.
 4. ~~**[mạnh] Dọn 3 khu**~~ — xong: đồ đổ nát là thực thể trong `state.temple.debris`, chia 3 khu, dọn món +1 pháp lực, sạch khu +5 pháp lực +2 uy tín. (Trạng thái đền theo bậc gắn với việc sửa — việc 7.)
-4b. **[mạnh] Chạm vào người dân → bảng thông tin**: tên, hạnh phúc, đức tin, 2–3 suy nghĩ lấy từ trạng thái thật (khuôn để sau mở rộng theo hệ nhu cầu).
+4b. ~~**[mạnh] Chạm vào người dân → bảng thông tin**~~ — xong: tên, tuổi, hạnh phúc, đức tin, suy nghĩ lấy từ trạng thái thật, mong ước theo lứa tuổi (`sim/mood.js`, `ui/personpanel.js`). Hạnh phúc / đức tin hiện tính từ trạng thái, chưa có lịch sử và chưa nối pháp lực (chờ 11b).
 5. **[nhẹ] HUD dọc** — một phần: thanh chỉ số trên cùng (`ui/hud.js`). Còn: thanh hành động dưới, nút chuyển chế độ, giấu bảng thử sau `?debug=1`.
    Mô tả gốc: thanh trên (tiền, pháp lực, uy tín, ngày giờ), thanh hành động dưới, thông báo nổi; thay bảng thử (giữ bảng thử sau `?debug=1`).
 6. **[nhẹ] Lưu/tải** vào localStorage (state đã JSON-serializable), tự lưu mỗi sáng.
