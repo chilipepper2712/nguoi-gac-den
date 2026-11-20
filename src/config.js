@@ -102,6 +102,23 @@ export const CONFIG = {
     // Nhân vật chính: dân văn phòng — áo sơ mi trắng, quần sẫm, tóc đen ngắn (chỉ số vào các bảng trên)
     playerLook: { hair: 0, skin: 1, hairColor: 0, shirt: 0, pants: 3 },
   },
+  // Vẽ bùa đuổi ma (bản chơi thử). Hình tự chế trong src/sim/talisman.js.
+  talisman: {
+    glyphs: [               // unlock: mức pháp lực cần để mở hình (tạm: 0, 1, 2)
+      { id: 'song', unlock: 0 }, { id: 'nui', unlock: 0 }, { id: 'xoay', unlock: 0 },
+      { id: 'lua', unlock: 1 }, { id: 'set', unlock: 1 },
+      { id: 'mam', unlock: 2 }, { id: 'mat', unlock: 2 }, { id: 'mua', unlock: 2 },
+    ],
+    samples: 40,            // số điểm lấy mẫu mỗi nét khi so
+    tolGood: 0.03,          // lệch trung bình ≤ mức này (theo cạnh ô vẽ) = khớp hoàn toàn
+    tolBad: 0.1,            // lệch ≥ mức này = 0 điểm (đã đo: vẽ nhầm hình nào cũng < 0.5)
+    minLengthRatio: 0.35,   // nét vẽ ngắn hơn tỉ lệ này so với nét mẫu = 0 điểm
+    extraStrokePenalty: 0.15,
+    passScore: 0.6,         // điểm trung bình để bùa thành
+    timePerGlyph: 7,        // giây cho mỗi hình
+    baseDamage: 20,         // sát thương bùa 1 hình khi vẽ hoàn hảo (tạm)
+    multiExponent: 1.3,     // bùa nhiều hình mạnh hơn cộng dồn
+  },
   aura: {
     minRadius: 2.2,       // bán kính vùng pháp lực khi đền hoang tàn (tạm, sau tính từ pháp lực)
     maxRadius: 6.5,       // khi đền đã sửa

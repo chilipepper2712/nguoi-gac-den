@@ -33,8 +33,10 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
   Biển hiệu tiếng Anh chung chung (`CONFIG.village.signs`) + một biển thương hiệu `CONFIG.village.brandSign` chữ trắng nền đen.
 - `src/sim/people.js` dân làng + nhân vật chính (đi lại theo ô đi được, đêm về nhà). `src/render/people.js` người khối chibi dựng bằng code:
   mỗi kiểu tóc một InstancedMesh, màu theo người qua thuộc tính instance, tay chân vung trong shader. **Chiều cao người `CONFIG.people.height` là thước căn tỉ lệ** (đền `temple.scale`, nhà `village.houseScale`).
+- `src/sim/talisman.js` vẽ bùa: hình tự chế (không chữ Hán, không mẫu phù chú thật), chấm điểm nét vẽ, ghép bùa 1/3 hình. Thêm hình mới thì chạy test "vẽ nhầm sang hình khác < mức đậu" — hình na ná nhau phải sửa hình, không nới ngưỡng.
+  `src/ui/talisman.js` màn vẽ (DOM + canvas 2D, không qua Three.js).
 - `src/render/props/temple.js` đền + cổng theo `condition` (0 hoang tàn → 1 đã sửa). `src/ui/devpanel.js` là bảng thử tạm, không phải UI game.
-- Tham số URL xem nhanh: `?t=0.92` (giờ), `?temple=1`, `?pause=1`, `?walk=1` (người vẫn đi khi dừng giờ), `?dist=24` (cận cảnh), `?look=q,r` (nhìn vào ô), `?az=độ` (xoay camera), `?panel=0`, `?debug=1`.
+- Tham số URL xem nhanh: `?t=0.92` (giờ), `?temple=1`, `?pause=1`, `?walk=1` (người vẫn đi khi dừng giờ), `?dist=24` (cận cảnh), `?look=q,r` (nhìn vào ô), `?az=độ` (xoay camera), `?panel=0`, `?debug=1`, `?trace=1|3&glyph=song,nui` (mở màn vẽ bùa).
 
 ## Hiệu năng (bắt buộc — mục tiêu: điện thoại tầm trung chạy mượt, không nóng máy)
 
@@ -71,6 +73,8 @@ node tools/shot.mjs --size 844x390 --query "debug=1&seed=7"   # ngang, hiện dr
 - Thế giới hư cấu: tên làng, địa danh, sinh vật tự đặt.
 - Cổng, cột: tránh cột đỏ + xà ngang không mái (dễ giống cổng torii). Không tháp nhiều tầng, không hoa sen làm hoạ tiết, không đèn đá kiểu tōrō.
 - Ma: dễ thương (thân tròn, mắt to, má hồng), không máu me; không khí đêm mới là phần đáng sợ.
+- Hình vẽ bùa / hoạ tiết: tự chế, và **không được vô tình thành biểu tượng tôn giáo có thật**: cá Ichthys (hai cung bắt chéo), trăng lưỡi liềm + sao, thánh giá, chữ vạn,
+  sao 5 cánh / 6 cánh, ankh, chữ Om, âm dương, bát quái, bánh xe pháp, mắt trong tam giác. Thêm hình mới thì xem ảnh chụp và soát danh sách này.
 - "Quyên góp" chỉ là tiền trong game, không bao giờ gắn với tiền thật.
 - Nhân vật chính là **người trông coi, quản lý** — không phải người hành lễ.
 

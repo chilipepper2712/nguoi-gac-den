@@ -2,6 +2,7 @@
 // Ghi thẳng vào state — chỉ dùng để xem hình.
 
 import { clockLabel } from '../sim/clock.js';
+import { openTalisman } from './talisman.js';
 
 export function createDevPanel(state) {
   const el = document.createElement('div');
@@ -15,6 +16,10 @@ export function createDevPanel(state) {
       <button id="dp-play" type="button"></button>
       <button id="dp-speed" type="button"></button>
       <button id="dp-temple" type="button"></button>
+    </div>
+    <div class="row buttons">
+      <button id="dp-tal1" type="button">Bùa 1 hình</button>
+      <button id="dp-tal3" type="button">Bùa 3 hình</button>
     </div>`;
   document.body.appendChild(el);
 
@@ -32,6 +37,8 @@ export function createDevPanel(state) {
     state.clock.speed = speeds[(i + 1) % speeds.length];
   });
   temple.addEventListener('click', () => { state.temple.condition = state.temple.condition > 0.5 ? 0 : 1; });
+  $('#dp-tal1').addEventListener('click', () => openTalisman({ count: 1 }));
+  $('#dp-tal3').addEventListener('click', () => openTalisman({ count: 3 }));
 
   return {
     update() {

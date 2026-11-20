@@ -34,7 +34,10 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - **Biển hiệu**: tiếng Anh chung chung (GROCERY, COFFEE, REPAIR…) để tránh bị bắt bẻ; một biển **BRAVO6** chữ trắng nền đen (thương hiệu của tác giả) ở cửa hàng gần cổng đền nhất.
 - **Tỉ lệ**: căn theo người (cao 0.26); đền + cổng thu 0.75; cửa nhà cao ≈ người (người chibi đầu to).
 - **Nhân vật**: người khối chibi 3D dựng bằng code (đầu to, mắt chấm, má hồng, tóc/nón lá/mũ), vẽ hàng loạt; nhân vật chính áo sơ mi trắng, cà vạt đỏ. Dân đi lại ban ngày (viếng đền, sang nhà nhau), đêm về nhà.
-- **Đuổi ma = vẽ bùa**: người chơi dùng ngón tay đồ theo hình trên một tờ giấy vàng, nét đỏ. Bùa yếu 1 hình, bùa mạnh 3 hình (thứ tự ngẫu nhiên). Hình mới mở khoá theo mức pháp lực.
+- **Đuổi ma = vẽ bùa**: người chơi dùng ngón tay đồ theo hình trên một tờ giấy vàng, nét đỏ. Bùa yếu 1 hình, bùa mạnh 3 hình (thứ tự ngẫu nhiên, hiện lần lượt — không dùng hình ảnh máy đánh bạc). Hình mới mở khoá theo mức pháp lực.
+  **Hình tự chế, không có thật** (không chữ Hán, không mẫu phù chú thật, không âm dương/bát quái): Sóng, Núi, Xoáy (mở sẵn) · Lửa, Sét · Mầm, Mắt, Mưa. (Bỏ trăng lưỡi liềm: dễ bị đọc thành biểu tượng tôn giáo; Mắt vẽ hai cung gặp nhau ở khoé, không bắt chéo thành hình cá.) Mỗi hình 1–3 nét, đủ đơn giản để đồ bằng ngón tay.
+  Chấm điểm (src/sim/talisman.js): độ lệch trung bình hai chiều giữa nét vẽ và nét mẫu, không phân biệt chiều vẽ và thứ tự nét; đã đo để vẽ nhầm sang hình khác luôn dưới mức đậu (test bắt buộc).
+  Bản chơi thử: `?trace=1|3`, hoặc nút "Bùa 1 hình / 3 hình" ở bảng thử.
 - **Vật phẩm**: chuông, đèn lồng… dùng được; tránh biểu tượng tôn giáo.
 - Tone: **ấm áp, hài** là nền; ban đêm không khí đáng sợ (tối, lạnh, sương) nhưng **ma dễ thương**.
 - Asset: hybrid. Code dựng công trình nhiều trạng thái, địa hình, cây thường (vài dáng đơn giản rải theo cụm). AI (Higgsfield) cho đồ hữu cơ nổi bật.
@@ -79,9 +82,8 @@ Kết luận: SAM + chuyển đổi là mặc định cho đồ hữu cơ; Hunyu
 
 0. Bản đồ có cần là đảo giữa nước không, hay là thung lũng trong đất liền (rìa là đồi rừng tan vào sương), hay mảnh đất lơ lửng kiểu diorama?
 
-1. Hình vẽ trên bùa: tự chế (khuyến nghị — đơn giản để đồ bằng ngón tay, không lấy chữ Hán / mẫu phù chú có thật) hay chép mẫu bùa thật? Gọi là "bùa" hay tên khác?
-2. Người chơi tự vẽ bùa → nhân vật không còn chỉ là người trông coi. Chấp nhận thành cốt truyện "người trông coi dần thành người gác đền" (sức mạnh đến từ pháp lực của đền), hay giữ nguyên vai?
-3. Vẽ hỏng thì sao (mất tờ bùa, ma hồi máu, ma chạy)? Có giới hạn thời gian không? Giấy/mực lấy ở đâu (đền cấp theo pháp lực, hay mua ở chợ làng)?
+1. Người chơi tự vẽ bùa → nhân vật không còn chỉ là người trông coi. Chấp nhận thành cốt truyện "người trông coi dần thành người gác đền" (sức mạnh đến từ pháp lực của đền), hay giữ nguyên vai?
+2. Vẽ hỏng thì sao (mất tờ bùa, ma hồi máu, ma chạy)? Giới hạn thời gian mỗi hình bao nhiêu (bản thử: 7 giây)? Giấy/mực lấy ở đâu (đề xuất: sức mạnh từ pháp lực của đền, giấy mực mua ở chợ làng)?
 
 ## Rủi ro thiết kế đã nêu
 

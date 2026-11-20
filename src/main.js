@@ -5,6 +5,7 @@ import { tickClock } from './sim/clock.js';
 import { tickPeople } from './sim/people.js';
 import { createView } from './render/view.js';
 import { createDevPanel } from './ui/devpanel.js';
+import { openTalisman } from './ui/talisman.js';
 import * as THREE from 'three';
 
 const params = new URLSearchParams(location.search);
@@ -47,6 +48,15 @@ if (params.has('az')) {
   controls.update();
 }
 const panel = params.get('panel') === '0' ? null : createDevPanel(state);
+// ?trace=1|3 mở ngay màn vẽ bùa; &glyph=song,nui ép hình (để chụp kiểm tra); &power=0..2
+if (params.has('trace')) {
+  openTalisman({
+    count: Number(params.get('trace')) || 1,
+    power: Number(params.get('power') ?? 2),
+    glyphs: params.get('glyph') ? params.get('glyph').split(',') : null,
+    time: params.has('time') ? Number(params.get('time')) : undefined,
+  });
+}
 
 // Cảnh thử asset (không phải gameplay)
 let labReady = Promise.resolve();
@@ -62,6 +72,8 @@ let fpsTime = 0;
 function frame(now) {
   const dt = Math.min((now - last) / 1000, 0.1);
   last = now;
+  // Đang mở màn phủ (vẽ bùa): không mô phỏng, không vẽ cảnh 3D
+  if (document.body.dataset.overlay && frames > 3) { last = now; requestAnimationFrame(frame); return; }
   tickClock(state, dt);
   // Di chuyển nội suy mỗi khung (rẻ); tìm đường chỉ khi một người chọn điểm đến mới
   if (!state.clock.paused || params.get('walk') === '1') tickPeople(state, dt * (state.clock.paused ? 1 : state.clock.speed));

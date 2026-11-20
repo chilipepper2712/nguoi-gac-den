@@ -63,3 +63,45 @@ html, body {
   color: #4a3b33;
   font: inherit;
 }
+
+/* Màn vẽ bùa (bản chơi thử) */
+#talisman {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18, 22, 38, 0.6);
+  z-index: 10;
+  touch-action: none;
+}
+#talisman .tal-card {
+  width: min(86vw, 360px, 62vh);
+  padding: 14px 16px 12px;
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.25), transparent 40%),
+    linear-gradient(180deg, #f3d77a, #e9c35a);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 0 0 3px #b3261c, inset 0 0 0 7px #f0cf6a, inset 0 0 0 8px #b3261c;
+  color: #7a1d14;
+}
+#talisman .tal-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 18px; margin: 4px 4px 8px; }
+#talisman .tal-paper { position: relative; width: 100%; }
+#talisman .tal-canvas { display: block; touch-action: none; border-radius: 4px; background: rgba(255, 245, 210, 0.25); }
+#talisman .tal-flash {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 34px; font-weight: 800; opacity: 0; transition: opacity 0.15s; pointer-events: none;
+}
+#talisman .tal-flash.show { opacity: 1; }
+#talisman .tal-flash.ok { color: #b3261c; }
+#talisman .tal-flash.bad { color: #6b5a4a; }
+#talisman .tal-timer { height: 6px; margin: 10px 4px 8px; border-radius: 3px; background: rgba(122, 29, 20, 0.15); overflow: hidden; }
+#talisman .tal-timer > div { height: 100%; width: 100%; background: #b3261c; }
+#talisman .tal-slots { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+#talisman .tal-slots canvas { width: 44px; height: 44px; border-radius: 4px; background: rgba(255, 245, 210, 0.45); box-shadow: inset 0 0 0 1px rgba(179, 38, 28, 0.35); }
+#talisman .tal-slots canvas.bad { opacity: 0.45; }
+#talisman .tal-actions { display: flex; gap: 8px; }
+#talisman .tal-actions button {
+  flex: 1; padding: 8px 4px; border: 0; border-radius: 6px; font: inherit; font-weight: 600;
+  background: rgba(122, 29, 20, 0.12); color: #7a1d14;
+}
