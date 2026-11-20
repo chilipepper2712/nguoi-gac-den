@@ -20,6 +20,7 @@ Ký hiệu chặn: ⛔ = chờ người dùng quyết (xem cuối file).
 2. **[mạnh] Chỉ số + kinh tế ngày**: tiền, pháp lực, uy tín trong state; cuối ngày tính quyên góp theo khách viếng; vòng pháp lực tính từ pháp lực (thay cho trạng thái đền).
 3. **[mạnh] Hệ tương tác**: chạm vật → hành động theo ngữ cảnh (dọn, sửa, nói chuyện), tốn thời gian, thanh tiến độ trên đầu nhân vật.
 4. **[mạnh] Dọn 3 khu**: chia sân đền thành 3 khu; đồ đổ nát thành thực thể trong state; dọn xong khu → tăng trạng thái đền theo bậc (0 → 0.33 → 0.66 → 1) thay cho công tắc hoang/sửa.
+4b. **[mạnh] Chạm vào người dân → bảng thông tin**: tên, hạnh phúc, đức tin, 2–3 suy nghĩ lấy từ trạng thái thật (khuôn để sau mở rộng theo hệ nhu cầu).
 5. **[nhẹ] HUD dọc**: thanh trên (tiền, pháp lực, uy tín, ngày giờ), thanh hành động dưới, thông báo nổi; thay bảng thử (giữ bảng thử sau `?debug=1`).
 6. **[nhẹ] Lưu/tải** vào localStorage (state đã JSON-serializable), tự lưu mỗi sáng.
 
@@ -30,6 +31,7 @@ Ký hiệu chặn: ⛔ = chờ người dùng quyết (xem cuối file).
 9. **[mạnh] Ma ban đêm có luật**: số ma tăng theo ngày, ma tìm tới nhà ngoài vòng pháp lực, bắt người và giấu ở một ô ngoài vòng.
 10. **[mạnh] Trận bắt ma** ⛔(vẽ hỏng thì sao): tìm ma đang giữ người → chạm ma → màn vẽ bùa → thanh máu ma giảm theo sát thương → hết máu ma xin tha và thả người.
 11. **[nhẹ] Khách viếng ban ngày**: dân đi viếng đền tăng theo uy tín, góp tiền khi viếng; phản ứng sợ khi có người bị bắt.
+11b. **[mạnh] Hệ nhu cầu → suy nghĩ, mong ước** ⛔(nối chỉ số): 5 nhóm nhu cầu, mong ước đáp ứng gián tiếp, hạnh phúc / đức tin thay đổi theo.
 
 ## Giai đoạn 3 — mở đầu, kết thúc, hoàn thiện
 
@@ -38,12 +40,19 @@ Ký hiệu chặn: ⛔ = chờ người dùng quyết (xem cuối file).
 14. **[mạnh] Lễ hội đầu tiên = kết demo**: điều kiện kích hoạt (vòng pháp lực phủ làng), đông khách, đèn lồng, người hành lễ đến, cảnh truyện tranh kết.
 15. **[nhẹ] Hướng dẫn chơi** ở khu dọn đầu tiên (gợi ý từng bước).
 16. **[nhẹ] Âm thanh**: tiếng nền ngày/đêm, tiếng chổi, chuông, ma cười khúc khích, tiếng mực (nguồn CC0).
+16b. **[nhẹ] VFX lá bùa**: vẽ xong thì cháy, tan dần.
 17. **[nhẹ] Chăm chút hình**: cửa sổ sáng ban đêm, phụ kiện người (kính, râu, mũ), thùng phi sai màu, dốc dễ nhận hơn.
 18. **[mạnh] Hiệu năng trên máy thật** ⛔(cần người dùng thử điện thoại): cỡ bản đồ bóng, tỉ lệ điểm ảnh, giới hạn khung hình.
+
+## Sau demo (bản game đầy đủ)
+
+- Vòng đời dân cư: kết đôi, cưới ở đền, nhà riêng / mở rộng nhà, con cái, tuổi già, tang lễ (chôn cất / hoả táng theo di nguyện).
+- Người nhập cư tốt / xấu, tội phạm lẩn trốn, vụ "ma bắt" thật ra do người.
 
 ## Câu hỏi đang chặn
 
 - ⛔ Việc 7: công trình xây đầu tiên trong demo là gì?
 - ⛔ Việc 10: vẽ bùa hỏng thì sao; thời gian mỗi hình.
 - ⛔ Bản đồ: đảo / thung lũng trong đất liền / mảnh đất lơ lửng (ảnh hưởng `sim/terrain.js`, nên chốt trước giai đoạn 2).
+- ⛔ Việc 11b: đức tin / hạnh phúc từng người nối với pháp lực, uy tín, quyên góp thế nào (đề xuất trong design.md, mục Dân cư).
 - Không chặn ngay: vai nhân vật (người trông coi dần thành người gác đền?) — cần trước việc 13.

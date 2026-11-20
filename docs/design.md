@@ -58,6 +58,42 @@ Người chơi là **người trông coi và quản lý**, không phải ngườ
 - Dốc vẽ thành bậc đá cho dễ nhận ra lối đi.
 - Ý tưởng cốt truyện: người ở công ty cũ (ví dụ ông sếp) về sau bị ma ám, phải tìm đến chính ngôi đền.
 
+## Dân cư & đời sống (người dùng mô tả 2026-11-20)
+
+### Đã chốt
+- **Tương tác với dân có giới hạn**, kiểu SimCity / Godus (đơn giản hơn SimCity): chạm vào một người dân → thấy ý kiến, suy nghĩ, mong đợi, mong ước, vấn đề của họ. Mục tiêu: cảm giác thế giới này là thật.
+- Người chơi **gián tiếp** đáp ứng mong ước / giải quyết vấn đề của dân → dân **tăng đức tin, tăng hạnh phúc**.
+- Hạnh phúc cao → **quyên góp nhiều hơn** → người chơi có tiền sửa đền, xây dựng.
+- Hạnh phúc cao → **vui vẻ tham gia** nghi lễ, lễ hội, lễ tổ chức ở đền.
+- Hạnh phúc cao **đủ lâu** → kết đôi → **cưới ở đền** (dân tới dự, trang trọng) → dọn ra **nhà riêng** (hoặc **mở rộng nhà, lên tầng**) → **có con**.
+- Người mất → **lễ tang ở đền**; **chôn cất hoặc hoả táng** theo di nguyện của người đó hoặc gia đình (gắn với khu nghĩa trang / lưu tro cốt).
+- **Người nhập cư** từ nơi khác đến: có người tốt, có người xấu (bắt cóc người, tội phạm lẩn trốn).
+- Hoàn thiện sau: **VFX lá bùa** — vẽ xong thì cháy, tan dần.
+
+### Đề xuất (chờ xác nhận)
+- **Hai tầng chỉ số**, để người chơi hiểu mình đang tăng cái gì:
+  - Mỗi người: **hạnh phúc** (cuộc sống ổn không) và **đức tin** (tin vào ngôi đền tới đâu).
+  - Cấp làng: **pháp lực** ← đức tin của những người đến viếng + tình trạng đền · **uy tín** ← hạnh phúc trung bình + các lễ đã tổ chức tốt · **quyên góp** ← hạnh phúc × đức tin của người viếng.
+- **Nhu cầu sinh ra suy nghĩ**: 5 nhóm — an toàn (trước ma), tinh thần (đền, nghi lễ), xã hội (bạn bè, sự kiện), sinh kế (việc làm, chợ), gia đình (bạn đời, con).
+  Suy nghĩ lấy từ trạng thái thật của thế giới (đêm qua ma lượn gần nhà, đường về nhà tối, mái đền còn dột, hàng xóm vừa bị bắt…), không phải câu ngẫu nhiên.
+  Mong ước cụ thể, đáp ứng gián tiếp được: thêm đèn đường, sửa mái đền, tổ chức lễ, cứu người thân bị bắt, có chỗ chôn cất / lưu tro cho cha mẹ.
+- **Thang thời gian đời người tách khỏi ngày đêm** (1 ngày = 8 phút; tuổi tính theo mùa, ví dụ 1 năm = N ngày), nếu không thì cả đời người chơi chẳng ai già.
+- **Chỉ mất vì tuổi già** — giữ tone ấm áp; ma chỉ bắt và giấu người, không giết.
+- **Kẻ xấu nhập cư lộ dần** qua suy nghĩ và hành vi lạ. Gợi ý: vài vụ "ma bắt người" thật ra là **người bắt** — thêm chất trinh thám, và người chơi phải phân biệt chuyện ma với chuyện người.
+- **Phạm vi demo**: chỉ có bảng suy nghĩ + mong ước + hạnh phúc / đức tin + quyên góp theo hạnh phúc (có thể 1 đám cưới dàn dựng làm điểm nhấn).
+  Vòng đời đầy đủ (kết đôi, con cái, tuổi già, tang lễ, nhập cư, tội phạm) để dành cho bản game.
+
+### Câu hỏi mở
+1. Đức tin và hạnh phúc của từng người nối với pháp lực, uy tín, quyên góp như đề xuất ở trên không?
+2. Người chơi (người trông coi, không có quyền bắt người) xử lý kẻ xấu nhập cư bằng cách nào: báo trưởng làng / công an, từ chối cho tá túc ở đền, hay dùng việc khác?
+3. Nguyên nhân mất: chỉ tuổi già?
+4. Demo có đám cưới không?
+
+### Rủi ro
+- **Phình phạm vi**: vòng đời dân cư là cả một game mô phỏng — phải tách demo / bản đầy đủ như trên.
+- **Hôn lễ, tang lễ ở đền hư cấu**: mô tả trung tính, không theo nghi thức tôn giáo cụ thể (không kinh, không áo cà sa, không thánh giá…). Hoả táng / chôn cất trình bày nhẹ nhàng, trang trọng.
+- **Nội dung tội phạm, bắt cóc người**: giữ nhẹ, không mô tả bạo lực chi tiết (quy định nội dung game ở VN).
+
 ## Bản thử phong cách (đã có)
 
 - Đền phương Đông hư cấu dựng bằng code, hai trạng thái hoang tàn / đã sửa (mái võng thủng rêu, cột gãy, gạch vụn ↔ mái ngói cong, đèn lồng). Cổng gỗ tối có mái nhỏ (tránh cột đỏ + xà ngang dễ giống torii).
